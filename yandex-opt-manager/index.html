@@ -73,32 +73,22 @@
     .bjs-powered-by { display: none !important; }
 
     /* ── Lane colours ── */
-    .customer-lane > .djs-visual > rect,
-    .customer-lane rect { fill: #e8f5e9 !important; stroke: #2e7d32 !important; }
-    .manager-lane > .djs-visual > rect,
-    .manager-lane rect  { fill: #e3f2fd !important; stroke: #1565c0 !important; }
-    .executor-lane > .djs-visual > rect,
-    .executor-lane rect { fill: #fff3e0 !important; stroke: #ef6c00 !important; }
+    .customer-lane > .djs-visual > rect { fill: #e8f5e9 !important; stroke: #2e7d32 !important; }
+    .manager-lane  > .djs-visual > rect { fill: #e3f2fd !important; stroke: #1565c0 !important; }
+    .executor-lane > .djs-visual > rect { fill: #fff3e0 !important; stroke: #ef6c00 !important; }
 
     /* ── Task colours ── */
-    .customer-task > .djs-visual > rect,
-    .customer-task rect { fill: #a5d6a7 !important; stroke: #2e7d32 !important; }
-    .manager-task > .djs-visual > rect,
-    .manager-task rect  { fill: #90caf9 !important; stroke: #1565c0 !important; }
-    .executor-task > .djs-visual > rect,
-    .executor-task rect { fill: #ffcc80 !important; stroke: #ef6c00 !important; }
+    .customer-task > .djs-visual > rect { fill: #a5d6a7 !important; stroke: #2e7d32 !important; }
+    .manager-task  > .djs-visual > rect { fill: #90caf9 !important; stroke: #1565c0 !important; }
+    .executor-task > .djs-visual > rect { fill: #ffcc80 !important; stroke: #ef6c00 !important; }
 
     /* ── Event colours ── */
-    .start-event > .djs-visual > circle,
-    .start-event circle { fill: #c8e6c9 !important; stroke: #2e7d32 !important; }
-    .end-event > .djs-visual > circle,
-    .end-event circle   { fill: #ffcdd2 !important; stroke: #c62828 !important; }
+    .start-event > .djs-visual > circle { fill: #c8e6c9 !important; stroke: #2e7d32 !important; }
+    .end-event   > .djs-visual > circle { fill: #ffcdd2 !important; stroke: #c62828 !important; }
 
     /* ── Gateway colours ── */
     .gateway > .djs-visual > polygon,
-    .gateway > .djs-visual > path,
-    .gateway polygon,
-    .gateway path { fill: #ffe0b2 !important; stroke: #e65100 !important; }
+    .gateway > .djs-visual > path { fill: #ffe0b2 !important; stroke: #e65100 !important; }
 
     /* ── Labels ── */
     .djs-label,
@@ -459,31 +449,6 @@
           ids.forEach(id => { try { canvas.addMarker(id, cls); } catch (e) {} });
         });
 
-        // Делаем подписи видимыми: снимаем инлайн-атрибуты SVG, которые скрывают текст,
-        // и перемещаем .djs-label в конец DOM-дерева элемента для отрисовки поверх визуала
-        document.querySelectorAll('#canvas .djs-element').forEach(function (el) {
-          var children = el.children;
-          var label = null;
-          for (var i = 0; i < children.length; i++) {
-            if (children[i].classList && children[i].classList.contains('djs-label')) {
-              label = children[i];
-              break;
-            }
-          }
-          if (label) {
-            // Принудительно устанавливаем fill на всех text/tspan внутри лейбла
-            // (CSS !important не перекрывает инлайн-атрибуты SVG fill="none")
-            var texts = label.querySelectorAll('text, tspan');
-            for (var t = 0; t < texts.length; t++) {
-              texts[t].setAttribute('fill', '#1a1a2e');
-              texts[t].removeAttribute('visibility');
-              texts[t].removeAttribute('opacity');
-            }
-            label.removeAttribute('visibility');
-            // Перемещаем лейбл в конец — SVG рисует элементы по порядку в DOM
-            el.appendChild(label);
-          }
-        });
       })
       .catch(err => {
         console.error('❌ Ошибка загрузки BPMN:', err);
