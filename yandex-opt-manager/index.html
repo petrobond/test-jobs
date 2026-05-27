@@ -459,11 +459,28 @@
           ids.forEach(id => { try { canvas.addMarker(id, cls); } catch (e) {} });
         });
 
-        // Перемещаем лейблы в конец SVG-элементов, чтобы текст рендерился поверх визуала
-        document.querySelectorAll('#canvas .djs-element').forEach(el => {
-          const label = el.querySelector(':scope > .djs-label');
-          const visual = el.querySelector(':scope > .djs-visual');
-          if (label && visual && Array.from(el.children).indexOf(label) < Array.from(el.children).indexOf(visual)) {
+        // Делаем подписи видимыми: снимаем инлайн-атрибуты SVG, которые скрывают текст,
+        // и перемещаем .djs-label в конец DOM-дерева элемента для отрисовки поверх визуала
+        document.querySelectorAll('#canvas .djs-element').forEach(function (el) {
+          var children = el.children;
+          var label = null;
+          for (var i = 0; i < children.length; i++) {
+            if (children[i].classList && children[i].classList.contains('djs-label')) {
+              label = children[i];
+              break;
+            }
+          }
+          if (label) {
+            // Принудительно устанавливаем fill на всех text/tspan внутри лейбла
+            // (CSS !important не перекрывает инлайн-атрибуты SVG fill="none")
+            var texts = label.querySelectorAll('text, tspan');
+            for (var t = 0; t < texts.length; t++) {
+              texts[t].setAttribute('fill', '#1a1a2e');
+              texts[t].removeAttribute('visibility');
+              texts[t].removeAttribute('opacity');
+            }
+            label.removeAttribute('visibility');
+            // Перемещаем лейбл в конец — SVG рисует элементы по порядку в DOM
             el.appendChild(label);
           }
         });
