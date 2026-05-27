@@ -101,7 +101,12 @@
     .gateway path { fill: #ffe0b2 !important; stroke: #e65100 !important; }
 
     /* ── Labels ── */
-    .djs-label { fill: #1a1a2e !important; font-weight: 500 !important; }
+    .djs-label,
+    .djs-label text,
+    .djs-label tspan {
+      fill: #1a1a2e !important;
+      font-weight: 500 !important;
+    }
 
     footer {
       text-align: center;
@@ -452,6 +457,15 @@
 
         Object.entries(markers).forEach(([cls, ids]) => {
           ids.forEach(id => { try { canvas.addMarker(id, cls); } catch (e) {} });
+        });
+
+        // Перемещаем лейблы в конец SVG-элементов, чтобы текст рендерился поверх визуала
+        document.querySelectorAll('#canvas .djs-element').forEach(el => {
+          const label = el.querySelector(':scope > .djs-label');
+          const visual = el.querySelector(':scope > .djs-visual');
+          if (label && visual && Array.from(el.children).indexOf(label) < Array.from(el.children).indexOf(visual)) {
+            el.appendChild(label);
+          }
         });
       })
       .catch(err => {
