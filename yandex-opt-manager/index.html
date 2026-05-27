@@ -152,6 +152,7 @@
                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
                   xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   id="Definitions_1"
                   targetNamespace="http://bpmn.io/schema/bpmn">
 
@@ -240,11 +241,11 @@
     <bpmn:sequenceFlow id="Flow_Check_to_Gateway"     sourceRef="Task_Check"          targetRef="Gateway_Decision" />
 
     <bpmn:sequenceFlow id="Flow_Gateway_to_End"        sourceRef="Gateway_Decision"   targetRef="EndEvent">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">План = Факт</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">План = Факт</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
 
     <bpmn:sequenceFlow id="Flow_Gateway_to_Correction"  sourceRef="Gateway_Decision"   targetRef="Gateway_Correction">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">План ≠ Факт</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">План ≠ Факт</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
 
     <bpmn:sequenceFlow id="Flow_Correction_to_Decompose" sourceRef="Gateway_Correction" targetRef="Task_Decompose" />
