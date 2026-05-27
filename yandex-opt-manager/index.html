@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Процесс «Обработка заказа» — BPMN AS-IS</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #fff;
+      padding: 24px 40px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    header .subtitle {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .legend {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px 40px;
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .legend .lane-customer::before,
+    .legend .lane-manager::before,
+    .legend .lane-executor::before {
+      content: '';
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+
+    .legend .lane-customer::before  { background: #e8f5e9; border: 1px solid #81c784; }
+    .legend .lane-manager::before   { background: #e3f2fd; border: 1px solid #64b5f6; }
+    .legend .lane-executor::before  { background: #fff3e0; border: 1px solid #ffb74d; }
+    .legend .gateway-marker         { color: #e65100; font-weight: 700; }
+
+    #canvas {
+      flex: 1;
+      min-height: 650px;
+      background: #fff;
+      margin: 0;
+    }
+
+    .bjs-powered-by { display: none !important; }
+
+    footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 12px;
+      color: #999;
+      border-top: 1px solid #eee;
+      background: #fafafa;
+    }
+
+    footer a { color: #0f3460; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📋 Процесс «Обработка заказа» — текущее состояние (AS-IS)</h1>
+    <div class="subtitle">BPMN 2.0 · Участники: Заказчик, Менеджер, Исполнитель · Интерактивная схема</div>
+  </header>
+
+  <div class="legend">
+    <span class="lane-customer">Заказчик</span>
+    <span class="lane-manager">Менеджер</span>
+    <span class="lane-executor">Исполнитель</span>
+    <span class="gateway-marker">◆ Шлюз (решение)</span>
+    <span style="color:#c62828;">⟲ Цикл корректировки</span>
+  </div>
+
+  <div id="canvas"></div>
+
+  <footer>
+    Тестовое задание · <a href="https://github.com/petrobond/test-jobs/tree/main/yandex-opt-manager">petrobond/test-jobs</a> ·
+    Полный анализ — в <a href="https://github.com/petrobond/test-jobs/blob/main/yandex-opt-manager/README.md">README.md</a>
+  </footer>
+
+  <!-- bpmn-js viewer from CDN -->
+  <script src="https://unpkg.com/bpmn-js@17/dist/bpmn-viewer.development.js"></script>
+
+  <script>
+    // ── BPMN 2.0 XML диаграммы ────────────────────────────────────
+    const bpmnXML = `<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0"
+                  id="Definitions_1"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_Customer" name="Заказчик" processRef="Process_Order" />
+    <bpmn:participant id="Participant_Manager"  name="Менеджер"  processRef="Process_Order" />
+    <bpmn:participant id="Participant_Executor" name="Исполнитель" processRef="Process_Order" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_Order" name="Обработка заказа" isExecutable="false">
+
+    <!-- Стартовое событие -->
+    <bpmn:startEvent id="StartEvent" name="Потребность в услуге">
+      <bpmn:outgoing>Flow_Start_to_Fill</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- ЗАКАЗЧИК: Заполняет форму -->
+    <bpmn:manualTask id="Task_FillForm" name="Заполнить форму заказа&#10;в трекере (вручную)">
+      <bpmn:incoming>Flow_Start_to_Fill</bpmn:incoming>
+      <bpmn:outgoing>Flow_Fill_to_Analyze</bpmn:outgoing>
+    </bpmn:manualTask>
+
+    <!-- МЕНЕДЖЕР: Анализирует запрос -->
+    <bpmn:userTask id="Task_Analyze" name="Получить заявку&#10;и проанализировать запрос">
+      <bpmn:incoming>Flow_Fill_to_Analyze</bpmn:incoming>
+      <bpmn:outgoing>Flow_Analyze_to_Decompose</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- МЕНЕДЖЕР: Декомпозирует на услуги -->
+    <bpmn:userTask id="Task_Decompose" name="Декомпозировать заказ&#10;на услуги вручную,&#10;заполнить перечень">
+      <bpmn:incoming>Flow_Analyze_to_Decompose</bpmn:incoming>
+      <bpmn:incoming>Flow_Correction_to_Decompose</bpmn:incoming>
+      <bpmn:outgoing>Flow_Decompose_to_Subtasks</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- МЕНЕДЖЕР: Создаёт подзадачи + ТЗ -->
+    <bpmn:userTask id="Task_Subtasks" name="Создать подзадачи,&#10;прописать ТЗ,&#10;передать исполнителям">
+      <bpmn:incoming>Flow_Decompose_to_Subtasks</bpmn:incoming>
+      <bpmn:outgoing>Flow_Subtasks_to_Execute</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- ИСПОЛНИТЕЛЬ: Выполняет -->
+    <bpmn:userTask id="Task_Execute" name="Выполнить задачу">
+      <bpmn:incoming>Flow_Subtasks_to_Execute</bpmn:incoming>
+      <bpmn:outgoing>Flow_Execute_to_Submit</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- ИСПОЛНИТЕЛЬ: Отдаёт на проверку -->
+    <bpmn:userTask id="Task_Submit" name="Отдать результат&#10;на проверку менеджеру">
+      <bpmn:incoming>Flow_Execute_to_Submit</bpmn:incoming>
+      <bpmn:outgoing>Flow_Submit_to_Check</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- МЕНЕДЖЕР: Сверка план/факт -->
+    <bpmn:userTask id="Task_Check" name="Сверить план/факт">
+      <bpmn:incoming>Flow_Submit_to_Check</bpmn:incoming>
+      <bpmn:outgoing>Flow_Check_to_Gateway</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- ШЛЮЗ: Решение менеджера -->
+    <bpmn:exclusiveGateway id="Gateway_Decision" name="Решение">
+      <bpmn:incoming>Flow_Check_to_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gateway_to_End</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gateway_to_Correction</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Конечное событие -->
+    <bpmn:endEvent id="EndEvent" name="Заказ закрыт">
+      <bpmn:incoming>Flow_Gateway_to_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Промежуточный шлюз-заглушка для визуализации цикла -->
+    <bpmn:exclusiveGateway id="Gateway_Correction" name="Скорректировать&#10;список услуг">
+      <bpmn:incoming>Flow_Gateway_to_Correction</bpmn:incoming>
+      <bpmn:outgoing>Flow_Correction_to_Decompose</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- ===== ПОТОКИ (Sequence Flows) ===== -->
+    <bpmn:sequenceFlow id="Flow_Start_to_Fill"       sourceRef="StartEvent"          targetRef="Task_FillForm" />
+    <bpmn:sequenceFlow id="Flow_Fill_to_Analyze"      sourceRef="Task_FillForm"       targetRef="Task_Analyze" />
+    <bpmn:sequenceFlow id="Flow_Analyze_to_Decompose" sourceRef="Task_Analyze"        targetRef="Task_Decompose" />
+    <bpmn:sequenceFlow id="Flow_Decompose_to_Subtasks" sourceRef="Task_Decompose"     targetRef="Task_Subtasks" />
+    <bpmn:sequenceFlow id="Flow_Subtasks_to_Execute"  sourceRef="Task_Subtasks"       targetRef="Task_Execute" />
+    <bpmn:sequenceFlow id="Flow_Execute_to_Submit"    sourceRef="Task_Execute"        targetRef="Task_Submit" />
+    <bpmn:sequenceFlow id="Flow_Submit_to_Check"      sourceRef="Task_Submit"         targetRef="Task_Check" />
+    <bpmn:sequenceFlow id="Flow_Check_to_Gateway"     sourceRef="Task_Check"          targetRef="Gateway_Decision" />
+
+    <bpmn:sequenceFlow id="Flow_Gateway_to_End"        sourceRef="Gateway_Decision"   targetRef="EndEvent">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">План = Факт</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Gateway_to_Correction"  sourceRef="Gateway_Decision"   targetRef="Gateway_Correction">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">План ≠ Факт</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Correction_to_Decompose" sourceRef="Gateway_Correction" targetRef="Task_Decompose" />
+
+  </bpmn:process>
+
+  <!-- ===== DIAGRAM INTERCHANGE (визуальные координаты) ===== -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+
+      <!-- ── Дорожка Заказчика ── -->
+      <bpmndi:BPMNShape id="Lane_Customer_di" bpmnElement="Participant_Customer" isHorizontal="true">
+        <dc:Bounds x="80" y="50" width="1620" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNLabel>
+        <dc:Bounds x="90" y="55" width="80" height="14" />
+      </bpmndi:BPMNLabel>
+
+      <!-- ── Дорожка Менеджера ── -->
+      <bpmndi:BPMNShape id="Lane_Manager_di" bpmnElement="Participant_Manager" isHorizontal="true">
+        <dc:Bounds x="80" y="150" width="1620" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNLabel>
+        <dc:Bounds x="90" y="155" width="80" height="14" />
+      </bpmndi:BPMNLabel>
+
+      <!-- ── Дорожка Исполнителя ── -->
+      <bpmndi:BPMNShape id="Lane_Executor_di" bpmnElement="Participant_Executor" isHorizontal="true">
+        <dc:Bounds x="80" y="350" width="1620" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNLabel>
+        <dc:Bounds x="90" y="355" width="80" height="14" />
+      </bpmndi:BPMNLabel>
+
+      <!-- Стартовое событие (Заказчик) -->
+      <bpmndi:BPMNShape id="StartEvent_di" bpmnElement="StartEvent">
+        <dc:Bounds x="130" y="70" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="108" y="110" width="84" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Заполнить форму (Заказчик) -->
+      <bpmndi:BPMNShape id="Task_FillForm_di" bpmnElement="Task_FillForm">
+        <dc:Bounds x="260" y="55" width="140" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <!-- Анализ запроса (Менеджер) -->
+      <bpmndi:BPMNShape id="Task_Analyze_di" bpmnElement="Task_Analyze">
+        <dc:Bounds x="480" y="195" width="140" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <!-- Декомпозиция (Менеджер) -->
+      <bpmndi:BPMNShape id="Task_Decompose_di" bpmnElement="Task_Decompose">
+        <dc:Bounds x="700" y="185" width="140" height="90" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <!-- Подзадачи + ТЗ (Менеджер) -->
+      <bpmndi:BPMNShape id="Task_Subtasks_di" bpmnElement="Task_Subtasks">
+        <dc:Bounds x="920" y="185" width="140" height="90" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <!-- Выполнение (Исполнитель) -->
+      <bpmndi:BPMNShape id="Task_Execute_di" bpmnElement="Task_Execute">
+        <dc:Bounds x="1140" y="365" width="140" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <!-- Отдать на проверку (Исполнитель) -->
+      <bpmndi:BPMNShape id="Task_Submit_di" bpmnElement="Task_Submit">
+        <dc:Bounds x="1360" y="360" width="140" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <!-- Сверка план/факт (Менеджер) -->
+      <bpmndi:BPMNShape id="Task_Check_di" bpmnElement="Task_Check">
+        <dc:Bounds x="1580" y="205" width="120" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <!-- Шлюз «Решение» (Менеджер) -->
+      <bpmndi:BPMNShape id="Gateway_Decision_di" bpmnElement="Gateway_Decision" isMarkerVisible="true">
+        <dc:Bounds x="1665" y="290" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1715" y="290" width="70" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Завершение -->
+      <bpmndi:BPMNShape id="EndEvent_di" bpmnElement="EndEvent">
+        <dc:Bounds x="1545" y="295" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1520" y="335" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Шлюз «Корректировка» (внизу, для визуализации цикла) -->
+      <bpmndi:BPMNShape id="Gateway_Correction_di" bpmnElement="Gateway_Correction" isMarkerVisible="true">
+        <dc:Bounds x="830" y="290" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="795" y="330" width="110" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- ===== РЁБРА (Sequence Flow connectors) ===== -->
+      <bpmndi:BPMNEdge id="Flow_Start_to_Fill_di" bpmnElement="Flow_Start_to_Fill">
+        <di:waypoint x="170" y="90" />
+        <di:waypoint x="260" y="90" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Fill_to_Analyze_di" bpmnElement="Flow_Fill_to_Analyze">
+        <di:waypoint x="400" y="90" />
+        <di:waypoint x="430" y="90" />
+        <di:waypoint x="430" y="230" />
+        <di:waypoint x="480" y="230" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Analyze_to_Decompose_di" bpmnElement="Flow_Analyze_to_Decompose">
+        <di:waypoint x="620" y="230" />
+        <di:waypoint x="700" y="230" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Decompose_to_Subtasks_di" bpmnElement="Flow_Decompose_to_Subtasks">
+        <di:waypoint x="840" y="230" />
+        <di:waypoint x="920" y="230" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Subtasks_to_Execute_di" bpmnElement="Flow_Subtasks_to_Execute">
+        <di:waypoint x="1060" y="250" />
+        <di:waypoint x="1090" y="250" />
+        <di:waypoint x="1090" y="395" />
+        <di:waypoint x="1140" y="395" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Execute_to_Submit_di" bpmnElement="Flow_Execute_to_Submit">
+        <di:waypoint x="1280" y="395" />
+        <di:waypoint x="1360" y="395" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Submit_to_Check_di" bpmnElement="Flow_Submit_to_Check">
+        <di:waypoint x="1500" y="395" />
+        <di:waypoint x="1530" y="395" />
+        <di:waypoint x="1530" y="235" />
+        <di:waypoint x="1580" y="235" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Check_to_Gateway_di" bpmnElement="Flow_Check_to_Gateway">
+        <di:waypoint x="1680" y="265" />
+        <di:waypoint x="1685" y="290" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Gateway_to_End_di" bpmnElement="Flow_Gateway_to_End">
+        <di:waypoint x="1665" y="310" />
+        <di:waypoint x="1585" y="315" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Gateway_to_Correction_di" bpmnElement="Flow_Gateway_to_Correction">
+        <di:waypoint x="1685" y="310" />
+        <di:waypoint x="1685" y="430" />
+        <di:waypoint x="850" y="430" />
+        <di:waypoint x="850" y="330" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Correction_to_Decompose_di" bpmnElement="Flow_Correction_to_Decompose">
+        <di:waypoint x="850" y="290" />
+        <di:waypoint x="850" y="275" />
+        <di:waypoint x="770" y="275" />
+        <di:waypoint x="770" y="230" />
+        <di:waypoint x="700" y="230" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>`;
+
+    // ── Инициализация bpmn-js ────────────────────────────────────
+    const viewer = new BpmnJS({ container: '#canvas' });
+
+    viewer.importXML(bpmnXML)
+      .then(result => {
+        const warnings = result.warnings;
+        if (warnings.length) {
+          console.warn('⚠ BPMN warnings:', warnings);
+        }
+        // Автоматически подогнать масштаб под размер канваса
+        const canvas = viewer.get('canvas');
+        canvas.zoom('fit-viewport', 'auto');
+      })
+      .catch(err => {
+        console.error('❌ Ошибка загрузки BPMN:', err);
+        document.getElementById('canvas').innerHTML =
+          '<div style="padding:60px;color:#c62828;font-size:18px;">' +
+          '⚠ Ошибка загрузки диаграммы: ' + err.message + '</div>';
+      });
+  </script>
+</body>
+</html>
