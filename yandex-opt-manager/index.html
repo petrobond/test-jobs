@@ -70,10 +70,6 @@
       margin: 0;
     }
 
-    #canvas .djs-container {
-      display: block !important;
-    }
-
     .bjs-powered-by { display: none !important; }
 
     /* ── Lane colours ── */
@@ -141,96 +137,98 @@
     Полный анализ — в <a href="https://github.com/petrobond/test-jobs/blob/main/yandex-opt-manager/README.md">README.md</a>
   </footer>
 
-  <!-- bpmn-js viewer from CDN -->
   <script src="https://unpkg.com/bpmn-js@17/dist/bpmn-viewer.development.js"></script>
 
   <script>
-    // ── BPMN 2.0 XML диаграммы ────────────────────────────────────
     const bpmnXML = `<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
                   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
-                  xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   id="Definitions_1"
                   targetNamespace="http://bpmn.io/schema/bpmn">
 
   <bpmn:collaboration id="Collaboration_1">
-    <bpmn:participant id="Participant_Customer" name="Заказчик" processRef="Process_Order" />
-    <bpmn:participant id="Participant_Manager"  name="Менеджер"  processRef="Process_Order" />
-    <bpmn:participant id="Participant_Executor" name="Исполнитель" processRef="Process_Order" />
+    <bpmn:participant id="Participant_Order" name="Обработка заказа" processRef="Process_Order" />
   </bpmn:collaboration>
 
   <bpmn:process id="Process_Order" name="Обработка заказа" isExecutable="false">
 
-    <!-- Стартовое событие -->
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_Customer" name="Заказчик">
+        <bpmn:flowNodeRef>StartEvent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_FillForm</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Manager" name="Менеджер">
+        <bpmn:flowNodeRef>Task_Analyze</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Decompose</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Subtasks</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Check</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Decision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Correction</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Executor" name="Исполнитель">
+        <bpmn:flowNodeRef>Task_Execute</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Submit</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
     <bpmn:startEvent id="StartEvent" name="Потребность в услуге">
       <bpmn:outgoing>Flow_Start_to_Fill</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <!-- ЗАКАЗЧИК: Заполняет форму -->
     <bpmn:manualTask id="Task_FillForm" name="Заполнить форму заказа&#10;в трекере (вручную)">
       <bpmn:incoming>Flow_Start_to_Fill</bpmn:incoming>
       <bpmn:outgoing>Flow_Fill_to_Analyze</bpmn:outgoing>
     </bpmn:manualTask>
 
-    <!-- МЕНЕДЖЕР: Анализирует запрос -->
     <bpmn:userTask id="Task_Analyze" name="Получить заявку&#10;и проанализировать запрос">
       <bpmn:incoming>Flow_Fill_to_Analyze</bpmn:incoming>
       <bpmn:outgoing>Flow_Analyze_to_Decompose</bpmn:outgoing>
     </bpmn:userTask>
 
-    <!-- МЕНЕДЖЕР: Декомпозирует на услуги -->
     <bpmn:userTask id="Task_Decompose" name="Декомпозировать заказ&#10;на услуги вручную,&#10;заполнить перечень">
       <bpmn:incoming>Flow_Analyze_to_Decompose</bpmn:incoming>
       <bpmn:incoming>Flow_Correction_to_Decompose</bpmn:incoming>
       <bpmn:outgoing>Flow_Decompose_to_Subtasks</bpmn:outgoing>
     </bpmn:userTask>
 
-    <!-- МЕНЕДЖЕР: Создаёт подзадачи + ТЗ -->
     <bpmn:userTask id="Task_Subtasks" name="Создать подзадачи,&#10;прописать ТЗ,&#10;передать исполнителям">
       <bpmn:incoming>Flow_Decompose_to_Subtasks</bpmn:incoming>
       <bpmn:outgoing>Flow_Subtasks_to_Execute</bpmn:outgoing>
     </bpmn:userTask>
 
-    <!-- ИСПОЛНИТЕЛЬ: Выполняет -->
     <bpmn:userTask id="Task_Execute" name="Выполнить задачу">
       <bpmn:incoming>Flow_Subtasks_to_Execute</bpmn:incoming>
       <bpmn:outgoing>Flow_Execute_to_Submit</bpmn:outgoing>
     </bpmn:userTask>
 
-    <!-- ИСПОЛНИТЕЛЬ: Отдаёт на проверку -->
     <bpmn:userTask id="Task_Submit" name="Отдать результат&#10;на проверку менеджеру">
       <bpmn:incoming>Flow_Execute_to_Submit</bpmn:incoming>
       <bpmn:outgoing>Flow_Submit_to_Check</bpmn:outgoing>
     </bpmn:userTask>
 
-    <!-- МЕНЕДЖЕР: Сверка план/факт -->
     <bpmn:userTask id="Task_Check" name="Сверить план/факт">
       <bpmn:incoming>Flow_Submit_to_Check</bpmn:incoming>
       <bpmn:outgoing>Flow_Check_to_Gateway</bpmn:outgoing>
     </bpmn:userTask>
 
-    <!-- ШЛЮЗ: Решение менеджера -->
     <bpmn:exclusiveGateway id="Gateway_Decision" name="Решение">
       <bpmn:incoming>Flow_Check_to_Gateway</bpmn:incoming>
       <bpmn:outgoing>Flow_Gateway_to_End</bpmn:outgoing>
       <bpmn:outgoing>Flow_Gateway_to_Correction</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <!-- Конечное событие -->
     <bpmn:endEvent id="EndEvent" name="Заказ закрыт">
       <bpmn:incoming>Flow_Gateway_to_End</bpmn:incoming>
     </bpmn:endEvent>
 
-    <!-- Промежуточный шлюз-заглушка для визуализации цикла -->
     <bpmn:exclusiveGateway id="Gateway_Correction" name="Скорректировать&#10;список услуг">
       <bpmn:incoming>Flow_Gateway_to_Correction</bpmn:incoming>
       <bpmn:outgoing>Flow_Correction_to_Decompose</bpmn:outgoing>
     </bpmn:exclusiveGateway>
 
-    <!-- ===== ПОТОКИ (Sequence Flows) ===== -->
     <bpmn:sequenceFlow id="Flow_Start_to_Fill"       sourceRef="StartEvent"          targetRef="Task_FillForm" />
     <bpmn:sequenceFlow id="Flow_Fill_to_Analyze"      sourceRef="Task_FillForm"       targetRef="Task_Analyze" />
     <bpmn:sequenceFlow id="Flow_Analyze_to_Decompose" sourceRef="Task_Analyze"        targetRef="Task_Decompose" />
@@ -249,208 +247,171 @@
     </bpmn:sequenceFlow>
 
     <bpmn:sequenceFlow id="Flow_Correction_to_Decompose" sourceRef="Gateway_Correction" targetRef="Task_Decompose" />
-
   </bpmn:process>
 
-  <!-- ===== DIAGRAM INTERCHANGE (визуальные координаты) ===== -->
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
 
-      <!-- ── Дорожка Заказчика ── -->
-      <bpmndi:BPMNShape id="Lane_Customer_di" bpmnElement="Participant_Customer" isHorizontal="true">
-        <dc:Bounds x="80" y="50" width="1620" height="100" />
+      <bpmndi:BPMNShape id="Participant_Order_di" bpmnElement="Participant_Order" isHorizontal="true">
+        <dc:Bounds x="40" y="40" width="1720" height="420" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNLabel>
-        <dc:Bounds x="90" y="55" width="80" height="14" />
-      </bpmndi:BPMNLabel>
 
-      <!-- ── Дорожка Менеджера ── -->
-      <bpmndi:BPMNShape id="Lane_Manager_di" bpmnElement="Participant_Manager" isHorizontal="true">
-        <dc:Bounds x="80" y="150" width="1620" height="200" />
+      <bpmndi:BPMNShape id="Lane_Customer_di" bpmnElement="Lane_Customer" isHorizontal="true">
+        <dc:Bounds x="70" y="40" width="1690" height="100" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNLabel>
-        <dc:Bounds x="90" y="155" width="80" height="14" />
-      </bpmndi:BPMNLabel>
 
-      <!-- ── Дорожка Исполнителя ── -->
-      <bpmndi:BPMNShape id="Lane_Executor_di" bpmnElement="Participant_Executor" isHorizontal="true">
-        <dc:Bounds x="80" y="350" width="1620" height="100" />
+      <bpmndi:BPMNShape id="Lane_Manager_di" bpmnElement="Lane_Manager" isHorizontal="true">
+        <dc:Bounds x="70" y="140" width="1690" height="200" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNLabel>
-        <dc:Bounds x="90" y="355" width="80" height="14" />
-      </bpmndi:BPMNLabel>
 
-      <!-- Стартовое событие (Заказчик) -->
+      <bpmndi:BPMNShape id="Lane_Executor_di" bpmnElement="Lane_Executor" isHorizontal="true">
+        <dc:Bounds x="70" y="340" width="1690" height="120" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="StartEvent_di" bpmnElement="StartEvent">
-        <dc:Bounds x="130" y="70" width="40" height="40" />
+        <dc:Bounds x="112" y="62" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="108" y="110" width="84" height="28" />
+          <dc:Bounds x="93" y="105" width="75" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
-      <!-- Заполнить форму (Заказчик) -->
       <bpmndi:BPMNShape id="Task_FillForm_di" bpmnElement="Task_FillForm">
-        <dc:Bounds x="260" y="55" width="140" height="70" />
-        <bpmndi:BPMNLabel />
+        <dc:Bounds x="220" y="50" width="130" height="60" />
       </bpmndi:BPMNShape>
 
-      <!-- Анализ запроса (Менеджер) -->
       <bpmndi:BPMNShape id="Task_Analyze_di" bpmnElement="Task_Analyze">
-        <dc:Bounds x="480" y="195" width="140" height="70" />
-        <bpmndi:BPMNLabel />
+        <dc:Bounds x="420" y="185" width="130" height="60" />
       </bpmndi:BPMNShape>
 
-      <!-- Декомпозиция (Менеджер) -->
       <bpmndi:BPMNShape id="Task_Decompose_di" bpmnElement="Task_Decompose">
-        <dc:Bounds x="700" y="185" width="140" height="90" />
-        <bpmndi:BPMNLabel />
+        <dc:Bounds x="620" y="175" width="130" height="80" />
       </bpmndi:BPMNShape>
 
-      <!-- Подзадачи + ТЗ (Менеджер) -->
       <bpmndi:BPMNShape id="Task_Subtasks_di" bpmnElement="Task_Subtasks">
-        <dc:Bounds x="920" y="185" width="140" height="90" />
-        <bpmndi:BPMNLabel />
+        <dc:Bounds x="820" y="175" width="130" height="80" />
       </bpmndi:BPMNShape>
 
-      <!-- Выполнение (Исполнитель) -->
-      <bpmndi:BPMNShape id="Task_Execute_di" bpmnElement="Task_Execute">
-        <dc:Bounds x="1140" y="365" width="140" height="60" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-
-      <!-- Отдать на проверку (Исполнитель) -->
-      <bpmndi:BPMNShape id="Task_Submit_di" bpmnElement="Task_Submit">
-        <dc:Bounds x="1360" y="360" width="140" height="70" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-
-      <!-- Сверка план/факт (Менеджер) -->
       <bpmndi:BPMNShape id="Task_Check_di" bpmnElement="Task_Check">
-        <dc:Bounds x="1580" y="205" width="120" height="60" />
-        <bpmndi:BPMNLabel />
+        <dc:Bounds x="1420" y="195" width="110" height="50" />
       </bpmndi:BPMNShape>
 
-      <!-- Шлюз «Решение» (Менеджер) -->
       <bpmndi:BPMNShape id="Gateway_Decision_di" bpmnElement="Gateway_Decision" isMarkerVisible="true">
-        <dc:Bounds x="1665" y="290" width="40" height="40" />
+        <dc:Bounds x="1585" y="270" width="40" height="40" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1715" y="290" width="70" height="40" />
+          <dc:Bounds x="1630" y="270" width="70" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
-      <!-- Завершение -->
       <bpmndi:BPMNShape id="EndEvent_di" bpmnElement="EndEvent">
-        <dc:Bounds x="1545" y="295" width="40" height="40" />
+        <dc:Bounds x="1480" y="275" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1520" y="335" width="90" height="14" />
+          <dc:Bounds x="1455" y="315" width="85" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
-      <!-- Шлюз «Корректировка» (внизу, для визуализации цикла) -->
       <bpmndi:BPMNShape id="Gateway_Correction_di" bpmnElement="Gateway_Correction" isMarkerVisible="true">
-        <dc:Bounds x="830" y="290" width="40" height="40" />
+        <dc:Bounds x="735" y="275" width="40" height="40" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="795" y="330" width="110" height="28" />
+          <dc:Bounds x="700" y="315" width="110" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
-      <!-- ===== РЁБРА (Sequence Flow connectors) ===== -->
+      <bpmndi:BPMNShape id="Task_Execute_di" bpmnElement="Task_Execute">
+        <dc:Bounds x="1040" y="360" width="130" height="50" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_Submit_di" bpmnElement="Task_Submit">
+        <dc:Bounds x="1240" y="355" width="130" height="60" />
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNEdge id="Flow_Start_to_Fill_di" bpmnElement="Flow_Start_to_Fill">
-        <di:waypoint x="170" y="90" />
-        <di:waypoint x="260" y="90" />
+        <di:waypoint x="148" y="80" />
+        <di:waypoint x="220" y="80" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Fill_to_Analyze_di" bpmnElement="Flow_Fill_to_Analyze">
-        <di:waypoint x="400" y="90" />
-        <di:waypoint x="430" y="90" />
-        <di:waypoint x="430" y="230" />
-        <di:waypoint x="480" y="230" />
+        <di:waypoint x="350" y="80" />
+        <di:waypoint x="385" y="80" />
+        <di:waypoint x="385" y="215" />
+        <di:waypoint x="420" y="215" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Analyze_to_Decompose_di" bpmnElement="Flow_Analyze_to_Decompose">
-        <di:waypoint x="620" y="230" />
-        <di:waypoint x="700" y="230" />
+        <di:waypoint x="550" y="215" />
+        <di:waypoint x="620" y="215" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Decompose_to_Subtasks_di" bpmnElement="Flow_Decompose_to_Subtasks">
-        <di:waypoint x="840" y="230" />
-        <di:waypoint x="920" y="230" />
+        <di:waypoint x="750" y="215" />
+        <di:waypoint x="820" y="215" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Subtasks_to_Execute_di" bpmnElement="Flow_Subtasks_to_Execute">
-        <di:waypoint x="1060" y="250" />
-        <di:waypoint x="1090" y="250" />
-        <di:waypoint x="1090" y="395" />
-        <di:waypoint x="1140" y="395" />
+        <di:waypoint x="950" y="235" />
+        <di:waypoint x="975" y="235" />
+        <di:waypoint x="975" y="385" />
+        <di:waypoint x="1040" y="385" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Execute_to_Submit_di" bpmnElement="Flow_Execute_to_Submit">
-        <di:waypoint x="1280" y="395" />
-        <di:waypoint x="1360" y="395" />
+        <di:waypoint x="1170" y="385" />
+        <di:waypoint x="1240" y="385" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Submit_to_Check_di" bpmnElement="Flow_Submit_to_Check">
-        <di:waypoint x="1500" y="395" />
-        <di:waypoint x="1530" y="395" />
-        <di:waypoint x="1530" y="235" />
-        <di:waypoint x="1580" y="235" />
+        <di:waypoint x="1370" y="385" />
+        <di:waypoint x="1395" y="385" />
+        <di:waypoint x="1395" y="220" />
+        <di:waypoint x="1420" y="220" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Check_to_Gateway_di" bpmnElement="Flow_Check_to_Gateway">
-        <di:waypoint x="1680" y="265" />
-        <di:waypoint x="1685" y="290" />
+        <di:waypoint x="1530" y="220" />
+        <di:waypoint x="1605" y="220" />
+        <di:waypoint x="1605" y="270" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Gateway_to_End_di" bpmnElement="Flow_Gateway_to_End">
-        <di:waypoint x="1665" y="310" />
-        <di:waypoint x="1585" y="315" />
+        <di:waypoint x="1585" y="290" />
+        <di:waypoint x="1516" y="293" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Gateway_to_Correction_di" bpmnElement="Flow_Gateway_to_Correction">
-        <di:waypoint x="1685" y="310" />
-        <di:waypoint x="1685" y="430" />
-        <di:waypoint x="850" y="430" />
-        <di:waypoint x="850" y="330" />
+        <di:waypoint x="1605" y="310" />
+        <di:waypoint x="1605" y="410" />
+        <di:waypoint x="755" y="410" />
+        <di:waypoint x="755" y="315" />
       </bpmndi:BPMNEdge>
 
       <bpmndi:BPMNEdge id="Flow_Correction_to_Decompose_di" bpmnElement="Flow_Correction_to_Decompose">
-        <di:waypoint x="850" y="290" />
-        <di:waypoint x="850" y="275" />
-        <di:waypoint x="770" y="275" />
-        <di:waypoint x="770" y="230" />
-        <di:waypoint x="700" y="230" />
+        <di:waypoint x="755" y="275" />
+        <di:waypoint x="755" y="260" />
+        <di:waypoint x="685" y="260" />
+        <di:waypoint x="685" y="215" />
+        <di:waypoint x="620" y="215" />
       </bpmndi:BPMNEdge>
 
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-
 </bpmn:definitions>`;
 
-    // ── Инициализация bpmn-js ────────────────────────────────────
     const viewer = new BpmnJS({ container: '#canvas' });
 
     viewer.importXML(bpmnXML)
       .then(result => {
         const warnings = result.warnings;
-        if (warnings.length) {
-          console.warn('⚠ BPMN warnings:', warnings);
-        }
+        if (warnings.length) console.warn('⚠ BPMN warnings:', warnings);
 
         const canvas = viewer.get('canvas');
 
-        // 1. Viewport: показываем всю диаграмму от левого края
-        canvas.viewbox({
-          x: 0,
-          y: 30,
-          width: 1750,
-          height: 420
-        });
+        // viewport: показываем диаграмму от левого края
+        canvas.viewbox({ x: 0, y: 30, width: 1780, height: 440 });
 
-        // 2. Стилизация через маркеры (надёжнее inline styles)
+        // раскраска через маркеры
         const markers = {
-          'customer-lane': ['Participant_Customer'],
-          'manager-lane':  ['Participant_Manager'],
-          'executor-lane': ['Participant_Executor'],
+          'customer-lane': ['Lane_Customer'],
+          'manager-lane':  ['Lane_Manager'],
+          'executor-lane': ['Lane_Executor'],
           'customer-task': ['Task_FillForm'],
           'manager-task':  ['Task_Analyze', 'Task_Decompose', 'Task_Subtasks', 'Task_Check'],
           'executor-task': ['Task_Execute', 'Task_Submit'],
@@ -460,16 +421,13 @@
         };
 
         Object.entries(markers).forEach(([cls, ids]) => {
-          ids.forEach(id => {
-            try { canvas.addMarker(id, cls); } catch (e) { /* ignore */ }
-          });
+          ids.forEach(id => { try { canvas.addMarker(id, cls); } catch (e) {} });
         });
       })
       .catch(err => {
         console.error('❌ Ошибка загрузки BPMN:', err);
         document.getElementById('canvas').innerHTML =
-          '<div style="padding:60px;color:#c62828;font-size:18px;">' +
-          '⚠ Ошибка загрузки диаграммы: ' + err.message + '</div>';
+          '<div style="padding:60px;color:#c62828;font-size:18px;">⚠ Ошибка: ' + err.message + '</div>';
       });
   </script>
 </body>
