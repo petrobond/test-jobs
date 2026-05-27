@@ -178,17 +178,17 @@
       <bpmn:outgoing>Flow_Start_to_Fill</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <bpmn:manualTask id="Task_FillForm" name="Заполнить форму заказа&#10;в трекере (вручную)">
+    <bpmn:manualTask id="Task_FillForm" name="Заполнить форму&#10;заказа (вручную)">
       <bpmn:incoming>Flow_Start_to_Fill</bpmn:incoming>
       <bpmn:outgoing>Flow_Fill_to_Analyze</bpmn:outgoing>
     </bpmn:manualTask>
 
-    <bpmn:userTask id="Task_Analyze" name="Получить заявку&#10;и проанализировать запрос">
+    <bpmn:userTask id="Task_Analyze" name="Получить заявку&#10;и проанализировать">
       <bpmn:incoming>Flow_Fill_to_Analyze</bpmn:incoming>
       <bpmn:outgoing>Flow_Analyze_to_Decompose</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_Decompose" name="Декомпозировать заказ&#10;на услуги вручную,&#10;заполнить перечень">
+    <bpmn:userTask id="Task_Decompose" name="Декомпозировать&#10;на услуги вручную">
       <bpmn:incoming>Flow_Analyze_to_Decompose</bpmn:incoming>
       <bpmn:incoming>Flow_Correction_to_Decompose</bpmn:incoming>
       <bpmn:outgoing>Flow_Decompose_to_Subtasks</bpmn:outgoing>
@@ -204,7 +204,7 @@
       <bpmn:outgoing>Flow_Execute_to_Submit</bpmn:outgoing>
     </bpmn:userTask>
 
-    <bpmn:userTask id="Task_Submit" name="Отдать результат&#10;на проверку менеджеру">
+    <bpmn:userTask id="Task_Submit" name="Отдать на проверку&#10;менеджеру">
       <bpmn:incoming>Flow_Execute_to_Submit</bpmn:incoming>
       <bpmn:outgoing>Flow_Submit_to_Check</bpmn:outgoing>
     </bpmn:userTask>
@@ -258,14 +258,23 @@
 
       <bpmndi:BPMNShape id="Lane_Customer_di" bpmnElement="Lane_Customer" isHorizontal="true">
         <dc:Bounds x="70" y="40" width="1690" height="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="40" y="75" width="25" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Manager_di" bpmnElement="Lane_Manager" isHorizontal="true">
         <dc:Bounds x="70" y="140" width="1690" height="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="40" y="220" width="25" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Lane_Executor_di" bpmnElement="Lane_Executor" isHorizontal="true">
         <dc:Bounds x="70" y="340" width="1690" height="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="40" y="390" width="25" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="StartEvent_di" bpmnElement="StartEvent">
@@ -277,22 +286,37 @@
 
       <bpmndi:BPMNShape id="Task_FillForm_di" bpmnElement="Task_FillForm">
         <dc:Bounds x="220" y="50" width="130" height="60" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="228" y="68" width="115" height="28" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_Analyze_di" bpmnElement="Task_Analyze">
         <dc:Bounds x="420" y="185" width="130" height="60" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="203" width="115" height="28" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_Decompose_di" bpmnElement="Task_Decompose">
         <dc:Bounds x="620" y="175" width="130" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="628" y="201" width="115" height="30" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_Subtasks_di" bpmnElement="Task_Subtasks">
         <dc:Bounds x="820" y="175" width="130" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="828" y="186" width="115" height="60" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_Check_di" bpmnElement="Task_Check">
         <dc:Bounds x="1420" y="195" width="110" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1425" y="208" width="100" height="28" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Gateway_Decision_di" bpmnElement="Gateway_Decision" isMarkerVisible="true">
@@ -318,10 +342,16 @@
 
       <bpmndi:BPMNShape id="Task_Execute_di" bpmnElement="Task_Execute">
         <dc:Bounds x="1040" y="360" width="130" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1048" y="373" width="115" height="28" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNShape id="Task_Submit_di" bpmnElement="Task_Submit">
         <dc:Bounds x="1240" y="355" width="130" height="60" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1248" y="368" width="115" height="28" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_Start_to_Fill_di" bpmnElement="Flow_Start_to_Fill">
