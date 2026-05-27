@@ -70,6 +70,10 @@
       margin: 0;
     }
 
+    #canvas .djs-container {
+      display: block !important;
+    }
+
     .bjs-powered-by { display: none !important; }
 
     footer {
@@ -399,9 +403,94 @@
         if (warnings.length) {
           console.warn('⚠ BPMN warnings:', warnings);
         }
-        // Автоматически подогнать масштаб под размер канваса
+
         const canvas = viewer.get('canvas');
+        const elementRegistry = viewer.get('elementRegistry');
+
+        // 1. Автоподгон масштаба
         canvas.zoom('fit-viewport', 'auto');
+
+        // 2. Прижимаем диаграмму к левому краю
+        const vbox = canvas.viewbox();
+        if (vbox.x > 0) {
+          canvas.scroll({ dx: -(vbox.x) + 10, dy: 0 });
+        }
+
+        // 3. Раскраска дорожек (Participants / Lanes)
+        const laneStyles = [
+          { id: 'Participant_Customer', fill: '#e8f5e9', stroke: '#2e7d32' },
+          { id: 'Participant_Manager',  fill: '#e3f2fd', stroke: '#1565c0' },
+          { id: 'Participant_Executor', fill: '#fff3e0', stroke: '#ef6c00' }
+        ];
+        laneStyles.forEach(({ id, fill, stroke }) => {
+          const el = elementRegistry.get(id);
+          if (!el) return;
+          const gfx = elementRegistry.getGraphics(el);
+          const rect = gfx && gfx.querySelector('rect');
+          if (rect) {
+            rect.style.fill = fill;
+            rect.style.stroke = stroke;
+            rect.style.fillOpacity = '1';
+          }
+          const text = gfx && gfx.querySelector('text');
+          if (text) {
+            text.style.fontWeight = '600';
+            text.style.fill = '#1a1a2e';
+          }
+        });
+
+        // 4. Раскраска задач
+        const taskStyles = {
+          'Task_FillForm':    { fill: '#a5d6a7', stroke: '#2e7d32' },
+          'Task_Analyze':     { fill: '#90caf9', stroke: '#1565c0' },
+          'Task_Decompose':   { fill: '#90caf9', stroke: '#1565c0' },
+          'Task_Subtasks':    { fill: '#90caf9', stroke: '#1565c0' },
+          'Task_Execute':     { fill: '#ffcc80', stroke: '#ef6c00' },
+          'Task_Submit':      { fill: '#ffcc80', stroke: '#ef6c00' },
+          'Task_Check':       { fill: '#90caf9', stroke: '#1565c0' }
+        };
+        Object.entries(taskStyles).forEach(([id, style]) => {
+          const el = elementRegistry.get(id);
+          if (!el) return;
+          const gfx = elementRegistry.getGraphics(el);
+          const rect = gfx && gfx.querySelector('rect');
+          if (rect) {
+            rect.style.fill = style.fill;
+            rect.style.stroke = style.stroke;
+          }
+        });
+
+        // 5. Раскраска событий
+        const startEvt = elementRegistry.get('StartEvent');
+        if (startEvt) {
+          const gfx = elementRegistry.getGraphics(startEvt);
+          const circle = gfx && gfx.querySelector('circle');
+          if (circle) {
+            circle.style.fill = '#c8e6c9';
+            circle.style.stroke = '#2e7d32';
+          }
+        }
+        const endEvt = elementRegistry.get('EndEvent');
+        if (endEvt) {
+          const gfx = elementRegistry.getGraphics(endEvt);
+          const circle = gfx && gfx.querySelector('circle');
+          if (circle) {
+            circle.style.fill = '#ffcdd2';
+            circle.style.stroke = '#c62828';
+          }
+        }
+
+        // 6. Раскраска шлюзов
+        ['Gateway_Decision', 'Gateway_Correction'].forEach(id => {
+          const el = elementRegistry.get(id);
+          if (!el) return;
+          const gfx = elementRegistry.getGraphics(el);
+          const diamond = gfx && gfx.querySelector('polygon, path, rect');
+          if (diamond) {
+            diamond.style.fill = '#ffe0b2';
+            diamond.style.stroke = '#e65100';
+          }
+        });
       })
       .catch(err => {
         console.error('❌ Ошибка загрузки BPMN:', err);
