@@ -76,6 +76,37 @@
 
     .bjs-powered-by { display: none !important; }
 
+    /* ── Lane colours ── */
+    .customer-lane > .djs-visual > rect,
+    .customer-lane rect { fill: #e8f5e9 !important; stroke: #2e7d32 !important; }
+    .manager-lane > .djs-visual > rect,
+    .manager-lane rect  { fill: #e3f2fd !important; stroke: #1565c0 !important; }
+    .executor-lane > .djs-visual > rect,
+    .executor-lane rect { fill: #fff3e0 !important; stroke: #ef6c00 !important; }
+
+    /* ── Task colours ── */
+    .customer-task > .djs-visual > rect,
+    .customer-task rect { fill: #a5d6a7 !important; stroke: #2e7d32 !important; }
+    .manager-task > .djs-visual > rect,
+    .manager-task rect  { fill: #90caf9 !important; stroke: #1565c0 !important; }
+    .executor-task > .djs-visual > rect,
+    .executor-task rect { fill: #ffcc80 !important; stroke: #ef6c00 !important; }
+
+    /* ── Event colours ── */
+    .start-event > .djs-visual > circle,
+    .start-event circle { fill: #c8e6c9 !important; stroke: #2e7d32 !important; }
+    .end-event > .djs-visual > circle,
+    .end-event circle   { fill: #ffcdd2 !important; stroke: #c62828 !important; }
+
+    /* ── Gateway colours ── */
+    .gateway > .djs-visual > polygon,
+    .gateway > .djs-visual > path,
+    .gateway polygon,
+    .gateway path { fill: #ffe0b2 !important; stroke: #e65100 !important; }
+
+    /* ── Labels ── */
+    .djs-label { fill: #1a1a2e !important; font-weight: 500 !important; }
+
     footer {
       text-align: center;
       padding: 12px;
@@ -405,91 +436,32 @@
         }
 
         const canvas = viewer.get('canvas');
-        const elementRegistry = viewer.get('elementRegistry');
 
-        // 1. Автоподгон масштаба
-        canvas.zoom('fit-viewport', 'auto');
-
-        // 2. Прижимаем диаграмму к левому краю
-        const vbox = canvas.viewbox();
-        if (vbox.x > 0) {
-          canvas.scroll({ dx: -(vbox.x) + 10, dy: 0 });
-        }
-
-        // 3. Раскраска дорожек (Participants / Lanes)
-        const laneStyles = [
-          { id: 'Participant_Customer', fill: '#e8f5e9', stroke: '#2e7d32' },
-          { id: 'Participant_Manager',  fill: '#e3f2fd', stroke: '#1565c0' },
-          { id: 'Participant_Executor', fill: '#fff3e0', stroke: '#ef6c00' }
-        ];
-        laneStyles.forEach(({ id, fill, stroke }) => {
-          const el = elementRegistry.get(id);
-          if (!el) return;
-          const gfx = elementRegistry.getGraphics(el);
-          const rect = gfx && gfx.querySelector('rect');
-          if (rect) {
-            rect.style.fill = fill;
-            rect.style.stroke = stroke;
-            rect.style.fillOpacity = '1';
-          }
-          const text = gfx && gfx.querySelector('text');
-          if (text) {
-            text.style.fontWeight = '600';
-            text.style.fill = '#1a1a2e';
-          }
+        // 1. Viewport: показываем всю диаграмму от левого края
+        canvas.viewbox({
+          x: 0,
+          y: 30,
+          width: 1750,
+          height: 420
         });
 
-        // 4. Раскраска задач
-        const taskStyles = {
-          'Task_FillForm':    { fill: '#a5d6a7', stroke: '#2e7d32' },
-          'Task_Analyze':     { fill: '#90caf9', stroke: '#1565c0' },
-          'Task_Decompose':   { fill: '#90caf9', stroke: '#1565c0' },
-          'Task_Subtasks':    { fill: '#90caf9', stroke: '#1565c0' },
-          'Task_Execute':     { fill: '#ffcc80', stroke: '#ef6c00' },
-          'Task_Submit':      { fill: '#ffcc80', stroke: '#ef6c00' },
-          'Task_Check':       { fill: '#90caf9', stroke: '#1565c0' }
+        // 2. Стилизация через маркеры (надёжнее inline styles)
+        const markers = {
+          'customer-lane': ['Participant_Customer'],
+          'manager-lane':  ['Participant_Manager'],
+          'executor-lane': ['Participant_Executor'],
+          'customer-task': ['Task_FillForm'],
+          'manager-task':  ['Task_Analyze', 'Task_Decompose', 'Task_Subtasks', 'Task_Check'],
+          'executor-task': ['Task_Execute', 'Task_Submit'],
+          'start-event':   ['StartEvent'],
+          'end-event':     ['EndEvent'],
+          'gateway':       ['Gateway_Decision', 'Gateway_Correction']
         };
-        Object.entries(taskStyles).forEach(([id, style]) => {
-          const el = elementRegistry.get(id);
-          if (!el) return;
-          const gfx = elementRegistry.getGraphics(el);
-          const rect = gfx && gfx.querySelector('rect');
-          if (rect) {
-            rect.style.fill = style.fill;
-            rect.style.stroke = style.stroke;
-          }
-        });
 
-        // 5. Раскраска событий
-        const startEvt = elementRegistry.get('StartEvent');
-        if (startEvt) {
-          const gfx = elementRegistry.getGraphics(startEvt);
-          const circle = gfx && gfx.querySelector('circle');
-          if (circle) {
-            circle.style.fill = '#c8e6c9';
-            circle.style.stroke = '#2e7d32';
-          }
-        }
-        const endEvt = elementRegistry.get('EndEvent');
-        if (endEvt) {
-          const gfx = elementRegistry.getGraphics(endEvt);
-          const circle = gfx && gfx.querySelector('circle');
-          if (circle) {
-            circle.style.fill = '#ffcdd2';
-            circle.style.stroke = '#c62828';
-          }
-        }
-
-        // 6. Раскраска шлюзов
-        ['Gateway_Decision', 'Gateway_Correction'].forEach(id => {
-          const el = elementRegistry.get(id);
-          if (!el) return;
-          const gfx = elementRegistry.getGraphics(el);
-          const diamond = gfx && gfx.querySelector('polygon, path, rect');
-          if (diamond) {
-            diamond.style.fill = '#ffe0b2';
-            diamond.style.stroke = '#e65100';
-          }
+        Object.entries(markers).forEach(([cls, ids]) => {
+          ids.forEach(id => {
+            try { canvas.addMarker(id, cls); } catch (e) { /* ignore */ }
+          });
         });
       })
       .catch(err => {
