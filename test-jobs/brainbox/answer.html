@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ответ на тестовое задание — brainbox_I</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Geologica:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f4f2ee; --white: #fff; --dark: #12151f;
+      --text: #12151f; --text-2: #444c5e; --text-3: #8891a6;
+      --accent: #1847e3; --accent-light: #eef1fd; --accent-muted: #c7d0f9;
+      --border: #e0dcd4; --radius: 10px; --radius-lg: 16px;
+      --green: #16a34a; --green-bg: #dcfce7;
+      --orange: #c2410c; --orange-bg: #fff7ed;
+      --red: #dc2626; --red-bg: #fef2f2;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { font-family: 'Onest', sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+    /* NAV */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 56px; background: rgba(244,242,238,.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 32px; gap: 20px; }
+    .nav-logo { font-family: 'Geologica', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: -0.04em; color: var(--text); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .nav-title { font-size: 13px; color: var(--text-3); }
+    .nav-spacer { flex: 1; }
+    .nav-version { font-size: 11px; font-weight: 700; padding: 3px 10px; background: var(--accent-light); color: var(--accent); border-radius: 100px; }
+
+    /* LAYOUT */
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; padding-top: 56px; }
+
+    /* SIDEBAR */
+    .toc { position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; padding: 24px 16px; border-right: 1px solid var(--border); background: var(--white); }
+    .toc-section { margin-bottom: 20px; }
+    .toc-group { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); padding: 8px 12px 4px; }
+    .toc-link { display: block; font-size: 12px; font-weight: 500; color: var(--text-2); text-decoration: none; padding: 5px 12px; border-radius: 6px; line-height: 1.4; margin-bottom: 1px; }
+    .toc-link:hover { background: var(--accent-light); color: var(--accent); }
+
+    /* CONTENT */
+    .content { padding: 48px 56px 96px; max-width: 860px; }
+
+    /* TYPOGRAPHY */
+    h1 { font-family: 'Geologica', sans-serif; font-size: 36px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 12px; }
+    h2 { font-family: 'Geologica', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; margin: 48px 0 16px; padding-top: 8px; }
+    h3 { font-family: 'Geologica', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; margin: 28px 0 10px; }
+    h4 { font-size: 14px; font-weight: 700; margin: 20px 0 8px; color: var(--text); }
+    p { font-size: 15px; color: var(--text-2); line-height: 1.7; margin-bottom: 12px; }
+    strong { color: var(--text); font-weight: 600; }
+    code { font-family: 'Courier New', monospace; font-size: 13px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; color: var(--accent); }
+
+    /* CARDS */
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 16px; }
+    .card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 12px; }
+
+    /* BADGES */
+    .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 100px; display: inline-block; }
+    .badge-blue { background: var(--accent-light); color: var(--accent); }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-orange { background: var(--orange-bg); color: var(--orange); border: 1px solid #fed7aa; }
+    .badge-red { background: var(--red-bg); color: var(--red); }
+    .badge-grey { background: var(--bg); color: var(--text-2); border: 1px solid var(--border); }
+    .badge-dark { background: var(--dark); color: #fff; }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+    /* FLOW */
+    .flow { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
+    .flow-step { display: flex; gap: 14px; padding-bottom: 16px; }
+    .flow-step:last-child { padding-bottom: 0; }
+    .flow-line { display: flex; flex-direction: column; align-items: center; }
+    .flow-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-light); color: var(--accent); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .flow-connector { width: 1px; flex: 1; background: var(--border); margin: 3px 0; min-height: 12px; }
+    .flow-body { padding-top: 3px; }
+    .flow-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+    .flow-desc { font-size: 13px; color: var(--text-2); line-height: 1.45; }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+    th { background: var(--bg); border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); }
+    td { border: 1px solid var(--border); padding: 9px 12px; color: var(--text-2); line-height: 1.4; vertical-align: top; }
+    tr:nth-child(even) td { background: var(--bg); }
+
+    /* AI BLOCK */
+    .ai-block { background: var(--dark); border-radius: var(--radius-lg); padding: 24px 28px; margin-bottom: 20px; }
+    .ai-block h3 { color: var(--white); margin-top: 0; margin-bottom: 12px; }
+    .ai-block p { color: rgba(255,255,255,.6); }
+    .ai-block code { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.12); color: #8ba4ff; }
+
+    /* INFO / WARNING BOXES */
+    .info-box { border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px; font-size: 13px; line-height: 1.55; }
+    .info-box.blue { background: var(--accent-light); border: 1px solid var(--accent-muted); color: var(--accent); }
+    .info-box.orange { background: var(--orange-bg); border: 1px solid #fed7aa; color: var(--orange); }
+    .info-box.green { background: var(--green-bg); border: 1px solid #bbf7d0; color: #15803d; }
+    .info-box strong { color: inherit; }
+
+    /* SECTION ANCHOR OFFSET */
+    [id] { scroll-margin-top: 72px; }
+
+    /* LIST */
+    ul.req { list-style: none; padding: 0; margin-bottom: 16px; }
+    ul.req li { font-size: 14px; color: var(--text-2); line-height: 1.55; padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+    ul.req li:last-child { border-bottom: none; }
+    ul.req li::before { content: '✓'; color: var(--green); font-weight: 700; font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .toc { display: none; }
+      .content { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">brainbox<span>_I</span></a>
+  <span class="nav-title">Ответ на тестовое задание · CTO</span>
+  <div class="nav-spacer"></div>
+  <span class="nav-version">Июнь 2025</span>
+</nav>
+
+<div class="layout">
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-section">
+      <div class="toc-group">Ответы на вопросы</div>
+      <a href="#q1" class="toc-link">Срок реализации MVP</a>
+      <a href="#q2" class="toc-link">Технологический стек</a>
+      <a href="#q3" class="toc-link">Архитектура AI-агента</a>
+      <a href="#q4" class="toc-link">Конфигурация Selectel</a>
+      <a href="#q5" class="toc-link">Главный технический риск</a>
+      <a href="#q6" class="toc-link">Что оставлю «на после»</a>
+    </div>
+    <div class="toc-section">
+      <div class="toc-group">Технические решения</div>
+      <a href="#api-choice" class="toc-link">Выбор AI-провайдера</a>
+      <a href="#model-choice" class="toc-link">Выбор модели</a>
+      <a href="#llm-vs-ml" class="toc-link">LLM vs локальный ML</a>
+      <a href="#bus-factor" class="toc-link">Bus-factor и сообщество</a>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- HEADER -->
+    <div style="margin-bottom:8px;display:flex;gap:8px;flex-wrap:wrap;">
+      <span class="badge badge-dark">brainbox_I · Smart Fund</span>
+      <span class="badge badge-blue">Ответ на тестовое задание</span>
+      <span class="badge badge-green">CTO</span>
+    </div>
+    <h1>Ответ на тестовое задание<br>CTO / Founding Engineer</h1>
+    <p style="font-size:17px;color:var(--text-2);max-width:620px;line-height:1.65;">
+      Ниже — ответы на шесть обязательных вопросов, а также анализ ключевых технических решений: выбор AI-провайдера, модели, и стратегия перехода от LLM к локальному ML.
+    </p>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+      <div class="info-box blue" style="margin:0;flex:1;min-width:200px;">
+        <strong>AI-провайдер:</strong> vsegpt.ru (российский API-шлюз к Anthropic)
+      </div>
+      <div class="info-box green" style="margin:0;flex:1;min-width:200px;">
+        <strong>Хостинг:</strong> Selectel Cloud. CTO определяет конфигурацию.
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Q1: TIMELINE -->
+    <h2 id="q1">1. Срок реализации MVP</h2>
+    <p>
+      Оценка дана из расчёта <strong>4 часа в день (part-time, 20 ч/нед)</strong> одним разработчиком с активным использованием AI-агентов.
+      Итого <strong>80 часов (1 месяц)</strong> на весь MVP. Ускорение достигается за счёт AI-генерации ~70% кода (CRUD, формы, типы), готовой OpenAPI-спектрации и Docker-окружения «из коробки».
+    </p>
+
+    <table>
+      <thead><tr><th>Неделя</th><th>Модули</th><th>Что делаем</th><th>Часов</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Infra + M1 + M2</td><td>Развёртывание Selectel (VPS + PostgreSQL + S3), Docker Compose, CI/CD. Форма фаундера (17 полей, honeypot), регистрация ментора (email + OTP), анкета ментора (17 вопросов), JWT-сессии. Всё генерируется AI по OpenAPI-спеке, CTO ревьюит и кастомизирует</td><td>24</td></tr>
+        <tr><td>2</td><td>M3 + M4</td><td>Каталог менторов (публичный, фильтры, карточки — Next.js ISR), панель администратора (CRUD-эндпоинты + минимальный UI: управление ролями, назначение ментора на стартап, создание страниц стартапов)</td><td>20</td></tr>
+        <tr><td>3</td><td>M5 + M6</td><td>Страница Monthly Update (загрузка транскрипта, drag-and-drop), AI-анализ транскрипта + AI-матчинг (Claude Sonnet через vsegpt.ru с Prompt Caching), асинхронная очередь (Redis/BullMQ), polling статуса на фронте</td><td>24</td></tr>
+        <tr><td>4</td><td>Интеграция + деплой</td><td>End-to-end тесты критического пути, фикс багов, деплой на боевой Selectel, проверка безопасности, документация (README), передача доступов</td><td>12</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box green">
+      <strong>Итого: 4 недели (1 месяц, 80 часов)</strong> от старта до готового MVP на Selectel. С запасом на непредвиденное — <strong>5 недель</strong>. При начале 15 июня 2025 — готовность <strong>15 июля 2025</strong>.
+    </div>
+
+    <div class="info-box blue">
+      <strong>Как достигается сжатие с 240 до 80 часов:</strong><br>
+      • AI генерирует весь CRUD по SQL-схеме (модели + эндпоинты + тесты) — экономия ~60 часов<br>
+      • Фронт генерируется из OpenAPI-спекты (типы TypeScript, React-хуки, первичная вёрстка) — экономия ~50 часов<br>
+      • Docker Compose, CI/CD и инфраструктурные скрипты — готовые шаблоны, AI адаптирует под проект — экономия ~30 часов<br>
+      • Документация и тесты генерируются AI параллельно с кодом — экономия ~20 часов
+    </div>
+
+    <hr class="divider">
+
+    <!-- Q2: TECH STACK -->
+    <h2 id="q2">2. Технологический стек</h2>
+
+    <table>
+      <thead><tr><th>Слой</th><th>Технология</th><th>Почему</th></tr></thead>
+      <tbody>
+        <tr><td>Backend</td><td><strong>FastAPI (Python 3.12)</strong></td><td>Нативный язык для AI/ML-интеграций. Асинхронный из коробки — критично для неблокирующих вызовов Claude API. Автоматическая OpenAPI-спектрация упрощает генерацию типов на фронте</td></tr>
+        <tr><td>Frontend</td><td><strong>Next.js 15 (React, TypeScript)</strong></td><td>Серверный рендеринг для SEO (каталог менторов), App Router, Tailwind CSS для быстрой вёрстки. Типы генерируются из OpenAPI-спекты FastAPI</td></tr>
+        <tr><td>База данных</td><td><strong>PostgreSQL 16</strong></td><td>Указана в ТЗ как рекомендация. Надёжно, поддержка JSONB для хранения AI-ответов, полнотекстовый поиск для каталога</td></tr>
+        <tr><td>Очередь</td><td><strong>Redis + BullMQ</strong></td><td>Асинхронная обработка AI-вызовов (queued → processing → done/error). BullMQ даёт повторные попытки, мониторинг и dashboard</td></tr>
+        <tr><td>Хранилище</td><td><strong>Selectel S3</strong></td><td>S3-совместимое API. Хранение .txt транскриптов (макс. 5 МБ)</td></tr>
+        <tr><td>Email</td><td><strong>Selectel Mail / SendGrid</strong></td><td>Отправка OTP-кодов. Если Selectel Mail не подходит — SMTP через внешний сервис</td></tr>
+        <tr><td>AI API</td><td><strong>vsegpt.ru → Anthropic Claude</strong></td><td>Российский шлюз, решает проблему геоблокировки Anthropic из РФ (см. раздел «Выбор AI-провайдера»)</td></tr>
+        <tr><td>Инфраструктура</td><td><strong>Docker Compose</strong></td><td>Всё в контейнерах: backend, frontend, Redis, PostgreSQL (или managed). Деплой одной командой</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Как используются AI-агенты в разработке</h3>
+    <div class="card">
+      <div class="card-title">AI-native подход к разработке</div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot">1</div><div class="flow-connector"></div></div>
+          <div class="flow-body"><div class="flow-title">OpenAPI-спектрация → генерация кода</div><div class="flow-desc">FastAPI генерирует <code>openapi.json</code>. AI-агент (Claude) генерирует Next.js-типы (TypeScript), React-хуки, и первичную вёрстку страниц. CTO ревьюит и правит.</div></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot">2</div><div class="flow-connector"></div></div>
+          <div class="flow-body"><div class="flow-title">CRUD-операции от описания таблиц</div><div class="flow-desc">По SQL-схеме AI генерирует SQLAlchemy-модели, Pydantic-схемы и FastAPI-эндпоинты. ~70% CRUD-кода пишется AI, CTO проверяет безопасность и кастомизирует.</div></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot">3</div></div>
+          <div class="flow-body"><div class="flow-title">Тесты и документация</div><div class="flow-desc">AI генерирует pytest-тесты по сигнатурам эндпоинтов. README пишется по docker-compose.yml и .env.example.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box blue">
+      <strong>Почему не Ruby on Rails:</strong> Rails — отличный фреймворк, но для AI-native проекта интеграция с Claude API, ML-моделями и embedding-ами на Python на порядок естественнее. Без лишнего слоя абстракции.
+    </div>
+
+    <hr class="divider">
+
+    <!-- Q3: AI ARCHITECTURE -->
+    <h2 id="q3">3. Архитектура AI-агента</h2>
+
+    <div class="ai-block">
+      <h3>🤖 Схема вызовов Claude API (через vsegpt.ru)</h3>
+      <p>Два последовательных вызова. Оба синхронные в рамках одного async-воркера, но весь пайплайн — асинхронный относительно UI.</p>
+      <div style="margin-top:20px;">
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot" style="background:var(--green);">1</div><div class="flow-connector"></div></div>
+          <div class="flow-body"><div class="flow-title" style="color:#fff;">Анализ транскрипта → структурированный JSON</div><div class="flow-desc" style="color:rgba(255,255,255,.55);">Транскрипт (.txt) → Claude Sonnet (system prompt аналитика фонда). Выход: {summary, risks[], founder_requests[], growth_hypotheses[], next_steps[]}. ~8 000 токенов вход, ~1 000 выход.</div></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot" style="background:var(--green);">2</div><div class="flow-connector"></div></div>
+          <div class="flow-body"><div class="flow-title" style="color:#fff;">Матчинг гипотез с анкетами менторов (с Prompt Caching)</div><div class="flow-desc" style="color:rgba(255,255,255,.55);">Для каждой гипотезы из шага 1 → Claude Sonnet. Вход: анкеты всех 80+ менторов (поля qm5, qm6, qm8, qm11, qm12) + гипотеза. Анкеты кэшируются через Anthropic Prompt Caching (экономия 70–90% стоимости). Выход: [{mentor_id, score, reasoning, key_matches}].</div></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot" style="background:var(--accent);">→</div></div>
+          <div class="flow-body"><div class="flow-title" style="color:#fff;">Запись результатов в БД</div><div class="flow-desc" style="color:rgba(255,255,255,.55);">Результаты пишутся в таблицы monthly_updates и mentor_matches. Raw-ответы API сохраняются для дебага. Фронт получает статус через polling (Redis).</div></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Prompt Caching — деталь</h3>
+    <p>
+      Анкеты менторов (80+) суммарно занимают ~10 000–12 000 токенов. Они <strong>статичны</strong> между вызовами.
+      При использовании Anthropic Prompt Caching:
+    </p>
+    <ul class="req">
+      <li>Первая гипотеза: полная стоимость (~12 000 ток. входа)</li>
+      <li>Вторая и последующие: кэш попадает, платим только за новые токены (гипотеза + системный промпт, ~500–800 ток.) — <strong>экономия 70–90%</strong></li>
+    </ul>
+    <p>
+      Технически: в запросе к API указывается <code>cache_control: {"type": "ephemeral"}</code> на блоке с анкетами.
+      Поддерживается vsegpt.ru (при наличии соответствующей опции в их API; требуется уточнить при интеграции).
+    </p>
+
+    <h3>Обход геоблокировки</h3>
+    <div class="info-box blue">
+      <strong>vsegpt.ru</strong> — российский API-шлюз, предоставляющий доступ к моделям Anthropic (Claude) и OpenAI через серверы на территории РФ. Запросы от нашего backend на Selectel идут к vsegpt.ru → vsegpt.ru проксирует к Anthropic. Геоблокировка обходится полностью. Дополнительно: можно настроить собственный прокси-сервер на Selectel как fallback.
+    </div>
+
+    <hr class="divider">
+
+    <!-- Q4: SELECTEL -->
+    <h2 id="q4">4. Конфигурация Selectel</h2>
+
+    <h3>Расчёт стоимости (помесячно)</h3>
+    <table>
+      <thead><tr><th>Сервис</th><th>Конфигурация</th><th>Цена ₽/мес</th></tr></thead>
+      <tbody>
+        <tr><td>Облачный сервер (VPS)</td><td>4 vCPU, 8 GB RAM, 80 GB NVMe</td><td>~3 500</td></tr>
+        <tr><td>Управляемый PostgreSQL</td><td>2 vCPU, 4 GB RAM, 50 GB — или локально в Docker на VPS (бесплатно для MVP)</td><td>~1 500 (или 0)</td></tr>
+        <tr><td>S3-хранилище</td><td>До 50 GB (транскрипты, бэкапы)</td><td>~200</td></tr>
+        <tr><td>Redis (локально)</td><td>В Docker на VPS, достаточно для MVP</td><td>0</td></tr>
+        <tr><td>Vsegpt.ru API</td><td>~5 стартапов × 2 вызова/мес = 10 вызовов Claude Sonnet</td><td>~50</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box green">
+      <strong>Итого: ~3 750–5 250 ₽/мес</strong> в зависимости от использования managed PostgreSQL vs локального в Docker.
+      Для MVP достаточно одного VPS со всеми сервисами в Docker Compose — <strong>~3 750 ₽/мес</strong>.
+    </div>
+
+    <h3>Альтернативная минимальная конфигурация</h3>
+    <ul class="req">
+      <li>2 vCPU, 4 GB RAM, 80 GB NVMe: ~2 500 ₽/мес</li>
+      <li>PostgreSQL, Redis, backend и фронт — всё в Docker Compose на одном сервере</li>
+      <li>Достаточно для MVP с 5 стартапами и ~100 одновременных пользователей</li>
+    </ul>
+
+    <hr class="divider">
+
+    <!-- Q5: RISKS -->
+    <h2 id="q5">5. Главный технический риск</h2>
+
+    <div class="card">
+      <div class="card-title">Риск №1: доступность API и качество ответов</div>
+
+      <table>
+        <thead><tr><th>Риск</th><th>Вероятность</th><th>Влияние</th><th>Митигация</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Vsegpt.ru недоступен или меняет условия</strong></td>
+            <td>Средняя</td>
+            <td>Высокое — AI-анализ и матчинг не работают</td>
+            <td>(а) Собственный прокси на Selectel к Anthropic (резервный канал). (б) Fallback-провайдер: YandexGPT Pro с адаптированными промптами. (в) Архитектура позволяет сменить провайдера заменой одной переменной окружения</td>
+          </tr>
+          <tr>
+            <td><strong>Claude возвращает невалидный JSON</strong></td>
+            <td>Низкая (с response_format)</td>
+            <td>Среднее — ручная обработка</td>
+            <td>3 повтора с exponential backoff. При 3 неудачах — сохранение raw-ответа и ручная модерация. <code>response_format: { type: "json_object" }</code> + валидация Pydantic на выходе</td>
+          </tr>
+          <tr>
+            <td><strong>Транскрипт > 100K токенов</strong></td>
+            <td>Низкая (MVP: 1 звонок = ~10–20K слов)</td>
+            <td>Среднее</td>
+            <td>Разбивка текста на чанки с перекрытием 20%, параллельный анализ, агрегация результатов</td>
+          </tr>
+          <tr>
+            <td><strong>Рост нагрузки при масштабировании</strong></td>
+            <td>Низкая (5 стартапов)</td>
+            <td>Низкое</td>
+            <td>Архитектура с Redis-очередью позволяет горизонтально масштабировать воркеры. На 5 стартапов — избыточно</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box orange">
+      <strong>Стратегия:</strong> архитектура с абстракцией AI-провайдера (IChatProvider → AnthropicProvider, YandexProvider) + конфигурация через переменные окружения. Переключение между провайдерами — без изменения кода.
+    </div>
+
+    <hr class="divider">
+
+    <!-- Q6: POST-MVP -->
+    <h2 id="q6">6. Что оставлю «на после MVP»</h2>
+
+    <p>Сознательные упрощения в v1, которые станут техническим долгом и будут закрыты при переходе к production:</p>
+
+    <ul class="req">
+      <li><strong>Админка — через API (нет UI-панели)</strong> — CRUD для менторов, стартапов и ролей через curl/Postman или минимальный скрипт. Полноценный UI админки — v2</li>
+      <li><strong>Мониторинг и алертинг</strong> — базовое логирование (stdout → файл), без Sentry/Grafana. Добавить при росте пользователей</li>
+      <li><strong>CI/CD пайплайн</strong> — деплой через docker compose pull && up вручную. GitHub Actions с автотестами и деплоем — v2</li>
+      <li><strong>Загрузка больших транскриптов (>100K токенов)</strong> — только чанкование при превышении. Для MVP звонки ~30–60 минут, влезают в 100K</li>
+      <li><strong>Поиск по каталогу — без Elasticsearch</strong> — PostgreSQL полнотекстовый поиск (pg_trgm + tsvector). Достаточно для 100+ менторов</li>
+      <li><strong>Кэширование фронта</strong> — без Redis-кэша для страниц. Next.js ISR (Incremental Static Regeneration) для каталога менторов</li>
+      <li><strong>Автоматическая транскрибация</strong> — загрузка готового .txt. Интеграция с Whisper API или Yandex SpeechKit — v2</li>
+    </ul>
+
+    <hr class="divider">
+
+    <!-- API CHOICE -->
+    <h2 id="api-choice">Выбор AI-провайдера</h2>
+
+    <table>
+      <thead><tr><th>Критерий</th><th>vsegpt.ru (Anthropic)</th><th>YandexGPT Pro (Yandex AI)</th></tr></thead>
+      <tbody>
+        <tr><td>Геоблокировка</td><td>✅ Обходится (российский шлюз)</td><td>✅ Нет (российский сервис)</td></tr>
+        <tr><td>Качество на русском</td><td>⭐ Отличное</td><td>Хорошее, нуждается в тестировании</td></tr>
+        <tr><td>JSON-дисциплина</td><td>⭐ Стабильно с response_format</td><td>Приемлемо, иногда «вольности»</td></tr>
+        <tr><td>Prompt Caching</td><td>✅ Встроен, экономия 70–90%</td><td>❌ Нет</td></tr>
+        <tr><td>Цена (матчинг ×3 гипотезы)</td><td>~$0.04/update</td><td>~₽15–20/update</td></tr>
+        <tr><td>Цена за месяц (5 стартапов)</td><td>~$0.20 (~₽18)</td><td>~₽75–100</td></tr>
+        <tr><td>Роль</td><td><strong>✅ Основной</strong></td><td>Fallback</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box green">
+      <strong>Решение:</strong> vsegpt.ru — основной провайдер. YandexGPT Pro — резервный (fallback) на случай недоступности первого. Архитектура позволяет сменить провайдера сменой конфигурации без правок кода.
+    </div>
+
+    <hr class="divider">
+
+    <!-- MODEL CHOICE -->
+    <h2 id="model-choice">Выбор модели: Sonnet vs Haiku</h2>
+
+    <p>
+      ТЗ рекомендует <code>claude-sonnet-4-5</code> или актуальный Sonnet. Рассмотрен вариант использования более дешёвой модели Haiku для задачи матчинга.
+    </p>
+
+    <table>
+      <thead><tr><th>Критерий</th><th>Claude 3.5 Haiku</th><th>Claude 3.5/4 Sonnet</th></tr></thead>
+      <tbody>
+        <tr><td>Русский язык</td><td>Хороший, теряет нюансы</td><td>⭐ Отличное понимание</td></tr>
+        <tr><td>Структурированный JSON</td><td>~10–15% ответов требуют повтора</td><td>⭐ Стабильно, держит схему</td></tr>
+        <tr><td>Задача 1: анализ транскрипта</td><td>Риск пропустить неявные риски</td><td>⭐ Полноценный разбор</td></tr>
+        <tr><td>Задача 2: матчинг</td><td>Может свести к keyword matching</td><td>⭐ Семантический мэтчинг</td></tr>
+        <tr><td>Стоимость 1 update</td><td>~$0.012</td><td>~$0.04</td></tr>
+        <tr><td>Роль</td><td>Не использовать в MVP</td><td><strong>✅ Основная</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box green">
+      <strong>Решение:</strong> обе задачи — на <strong>Claude Sonnet</strong>. Разница в стоимости (~$0.03/update) пренебрежимо мала при объёмах MVP (5 стартапов/мес). Качество анализа транскрипта и матчинга — критично для ценности продукта, экономия здесь не оправдана. Haiku может быть рассмотрена через 3–6 месяцев при росте до 20+ стартапов после A/B-теста качества.
+    </div>
+
+    <hr class="divider">
+
+    <!-- LLM vs ML -->
+    <h2 id="llm-vs-ml">LLM vs локальный ML для скоринга</h2>
+
+    <p>
+      Вопрос: насколько хорошая идея делать скоринг с помощью LLM? Не лучше ли применить ML и обучить локальную модель?
+    </p>
+
+    <table>
+      <thead><tr><th>Подход</th><th>Плюсы</th><th>Минусы</th><th>Когда</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>LLM (Claude Sonnet)</strong></td>
+          <td>Быстрый старт (0 данных), понимает контекст и семантику, не требует обучения</td>
+          <td>Нестабильность оценок (вариативность), стоимость растёт с объёмом, зависит от внешнего API</td>
+          <td><strong>MVP</strong> (0–50 мэтчей)</td>
+        </tr>
+        <tr>
+          <td><strong>Embeddings + классификатор</strong></td>
+          <td>Стабильные оценки, дёшево, не зависит от внешнего API, работает быстро</td>
+          <td>Нужны размеченные данные (минимум 50–100 пар), требует ML-компетенций, cold-start проблема</td>
+          <td><strong>Через 3–6 месяцев</strong> после накопления данных</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Дорожная карта перехода</h3>
+    <div class="card">
+      <div class="card-title">Фазы развития системы матчинга</div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot">1</div><div class="flow-connector"></div></div>
+          <div class="flow-body">
+            <div class="flow-title">MVP: только LLM (Claude Sonnet)</div>
+            <div class="flow-desc">Все мэтчи сохраняются в БД с полями: гипотеза, ментор, score, reasoning, key_matches. Это — будущая разметка для обучения.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot">2</div><div class="flow-connector"></div></div>
+          <div class="flow-body">
+            <div class="flow-title">Накопление данных (3–6 мес)</div>
+            <div class="flow-desc">50+ мэтчей с обратной связью (подтверждённые/отклонённые). Параллельно: эмбеддинги анкет менторов (sentence-transformers, multilingual-e5-large).</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot">3</div><div class="flow-connector"></div></div>
+          <div class="flow-body">
+            <div class="flow-title">Гибридный режим: LLM + эмбеддинги</div>
+            <div class="flow-desc">LLM по-прежнему анализирует транскрипт → выделяет гипотезы. Матчинг — через cosine similarity гипотезы и анкет. LLM используется как fallback при низкой уверенности.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-line"><div class="flow-dot">4</div></div>
+          <div class="flow-body">
+            <div class="flow-title">Полностью локальный ранкер</div>
+            <div class="flow-desc">LightGBM или двухэтапный retrieval (эмбеддинги → топ-20 → кросс-энкодер). LLM отключён от задачи матчинга, остаётся только для анализа транскрипта.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box blue">
+      <strong>Почему не сразу локальный ML:</strong> для cold-start нужен хотя бы 50 размеченных примеров. LLM даёт возможность запустить продукт немедленно и параллельно накапливать данные для обучения. Это прагматичный компромисс: <strong>скорость запуска vs долгосрочная стоимость</strong>.
+    </div>
+
+    <hr class="divider">
+
+    <!-- BUS FACTOR -->
+    <h2 id="bus-factor">Bus-factor и процесс разработки с AI</h2>
+
+    <p>
+      Дополнительный ответ на вопрос из тестового задания: «Как организовать процесс разработки, чтобы по максимуму использовать AI, иметь возможность привлекать других разработчиков и снять зависимость от одного человека».
+    </p>
+
+    <div class="card">
+      <div class="card-title">Стратегия снижения bus-factor</div>
+      <ul class="req">
+        <li><strong>AI-генерируемая кодобаза с обязательным ревью.</strong> Каждый PR содержит diff, сгенерированный AI. CTO ревьюит и мёржит. Документация (архитектурные решения, промпты, конфигурация) ведётся в репозитории — <code>/docs</code>. Это позволяет новому разработчику войти в проект за 1–2 дня.</li>
+        <li><strong>Контракт-first разработка.</strong> OpenAPI-спектрация (FastAPI) — единственный источник правды о контрактах. Любой разработчик может сгенерировать клиентский код на любом языке. AI-агенты работают с этим контрактом.</li>
+        <li><strong>Документированные промпты и AI-воркфлоу.</strong> Системные промпты для Claude (анализ, матчинг) хранятся в репозитории как код. Конфигурация очередей, ретраев, таймаутов — в <code>.env.example</code>. Это код, а не устная договорённость.</li>
+        <li><strong>Модульная архитектура.</strong> Backend разделён на домены (founders, mentors, startups, ai, admin). Каждый домен — независимый Python-пакет. Фронт — Next.js pages + components. Новый разработчик может взять один модуль и не разбираться во всей системе.</li>
+        <li><strong>Сообщество менторов как со-разработчиков.</strong> Часть менторов фонда — технические специалисты. При росте системы они могут контрибьютить в опенсорс-компоненты (каталог, интеграции). Лицензия — MIT/Apache 2.0 на некритичные компоненты.</li>
+      </ul>
+    </div>
+
+    <hr class="divider">
+
+    <!-- FOOTER -->
+    <div style="background:var(--dark);border-radius:var(--radius-lg);padding:28px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+      <div>
+        <div style="font-family:'Geologica',sans-serif;font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.03em;margin-bottom:4px;">brainbox<span style="color:#6b8ff8;">_I</span></div>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);">Ответ на тестовое задание · CTO · Июнь 2025</div>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,.6);text-align:right;line-height:1.6;">
+        AI-провайдер: vsegpt.ru<br>
+        Модель: Claude Sonnet<br>
+        Хостинг: Selectel Cloud
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
