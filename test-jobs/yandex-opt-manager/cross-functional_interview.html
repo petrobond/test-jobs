@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кросс-функциональное интервью — Яндекс</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #fafafa; --white: #fff; --dark: #1a1a2e;
+      --text: #1a1a2e; --text-2: #444; --text-3: #888;
+      --accent: #fc0; --accent-dark: #e6b800;
+      --border: #e0e0e0; --radius: 8px;
+      --green: #16a34a; --green-bg: #dcfce7;
+      --blue: #2563eb; --blue-bg: #eff6ff;
+      --orange: #ea580c; --orange-bg: #fff7ed;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 52px; background: var(--dark); color: #fff; display: flex; align-items: center; padding: 0 28px; gap: 16px; }
+    .nav-logo { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; text-decoration: none; color: #fff; }
+    .nav-logo span { color: var(--accent); }
+    .nav-title { font-size: 12px; opacity: 0.6; }
+    .nav-spacer { flex: 1; }
+    .nav-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; background: rgba(255,255,255,.1); border-radius: 100px; }
+
+    .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; padding-top: 52px; }
+
+    .sidebar { position: sticky; top: 52px; height: calc(100vh - 52px); overflow-y: auto; padding: 20px; background: var(--white); border-right: 1px solid var(--border); }
+    .sidebar-group { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin: 14px 0 4px; }
+    .sidebar-link { display: block; font-size: 12px; color: var(--text-2); text-decoration: none; padding: 4px 8px; border-radius: 4px; margin-bottom: 1px; }
+    .sidebar-link:hover { background: #f5f5f5; color: var(--dark); }
+
+    .content { padding: 36px 48px 80px; max-width: 780px; }
+
+    h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 6px; }
+    h2 { font-size: 20px; font-weight: 700; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--accent); display: inline-block; }
+    h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; color: #333; }
+    p { font-size: 14px; color: var(--text-2); margin-bottom: 10px; }
+    strong { color: var(--text); }
+    code { font-size: 12px; background: #f0f0f0; padding: 1px 5px; border-radius: 3px; }
+    blockquote { border-left: 3px solid var(--accent); padding: 10px 16px; margin: 14px 0; background: #fffbe6; border-radius: 0 var(--radius) var(--radius) 0; font-size: 14px; color: #555; }
+
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+    th { background: #f5f5f5; border: 1px solid var(--border); padding: 7px 10px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-3); }
+    td { border: 1px solid var(--border); padding: 7px 10px; color: var(--text-2); vertical-align: top; }
+
+    .badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 100px; }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-blue { background: var(--blue-bg); color: var(--blue); }
+    .badge-orange { background: var(--orange-bg); color: var(--orange); }
+
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 16px; }
+    .card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); margin-bottom: 10px; }
+
+    .case { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 14px; border-left: 3px solid var(--accent); }
+    .case-title { font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+
+    .qa { padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .qa:last-child { border-bottom: none; }
+    .qa-q { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .qa-a { font-size: 13px; color: var(--text-2); }
+
+    .checklist { list-style: none; padding: 0; }
+    .checklist li { font-size: 13px; padding: 4px 0; display: flex; gap: 6px; }
+    .checklist li span { color: var(--green); font-weight: 700; }
+
+    ul { padding-left: 20px; font-size: 13px; color: var(--text-2); margin-bottom: 12px; }
+    li { margin-bottom: 3px; }
+
+    .footer { text-align: center; padding: 24px; font-size: 11px; color: #aaa; border-top: 1px solid var(--border); margin-top: 40px; }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { padding: 24px 20px; }
+    }
+    [id] { scroll-margin-top: 60px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">Я<span>ндекс</span></a>
+  <span class="nav-title">Подготовка к интервью</span>
+  <div class="nav-spacer"></div>
+  <span class="nav-badge">Кросс-функциональное</span>
+</nav>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-group">Контекст</div>
+  <a href="#about" class="sidebar-link">Что проверяют</a>
+  <a href="#context" class="sidebar-link">Контекст роли</a>
+
+  <div class="sidebar-group">Кейсы</div>
+  <a href="#self-presentation" class="sidebar-link">Самопрезентация</a>
+  <a href="#case1" class="sidebar-link">Кейс 1: PT</a>
+  <a href="#case2" class="sidebar-link">Кейс 2: Продакт</a>
+  <a href="#case3" class="sidebar-link">Кейс 3: VMware</a>
+
+  <div class="sidebar-group">Вопросы</div>
+  <a href="#typical-qa" class="sidebar-link">Типичные вопросы</a>
+  <a href="#frameworks" class="sidebar-link">Фреймворки</a>
+  <a href="#communication" class="sidebar-link">Коммуникация</a>
+  <a href="#questions-to-ask" class="sidebar-link">Вопросы им</a>
+  <a href="#checklist-section" class="sidebar-link">Чек-лист</a>
+  <a href="#experience-map" class="sidebar-link">Карта опыта</a>
+</aside>
+
+<main class="content">
+
+<p style="font-size:12px;color:var(--text-3);margin-bottom:4px;">Вакансия: Менеджер проектов документирования (Yandex Crowd) · Кандидат: Пётр Бондарев</p>
+<h1>Кросс-функциональное интервью</h1>
+<p style="font-size:13px;color:var(--text-3);">Тип интервью: Кросс-функциональное взаимодействие · Июнь 2026</p>
+
+<hr style="border:none;border-top:1px solid var(--border);margin:20px 0;">
+
+<!-- Что проверяют -->
+<h2 id="about">Что проверяют</h2>
+<div class="card">
+  <ol style="padding-left:18px;font-size:13px;color:var(--text-2);">
+    <li><strong>Умение работать с командами за пределами своей функции</strong> — не «я сделал», а «я договорился с X, чтобы сделали Y»</li>
+    <li><strong>Influence без authority</strong> — результат от людей, которые вам не подчиняются</li>
+    <li><strong>Управление конфликтами интересов</strong> — когда KPI команд противоречат друг другу</li>
+    <li><strong>Коммуникация на трёх языках</strong> — с разработчиками, продактами, топ-менеджментом</li>
+    <li><strong>Системное мышление</strong> — видеть картину целиком, а не только свой участок</li>
+  </ol>
+</div>
+<p style="font-size:12px;color:var(--text-3);">Проводят: 1–2 человека — будущие коллеги (PM, разработчики, продакты из смежных команд Crowd).</p>
+
+<!-- Контекст роли -->
+<h2 id="context">Контекст роли</h2>
+<table>
+  <tr><td><strong>Отдел</strong></td><td>Документирование Yandex Crowd — краудсорсинговая модель</td></tr>
+  <tr><td><strong>Клиенты</strong></td><td>240+ команд Яндекса + сам Crowd</td></tr>
+  <tr><td><strong>Исполнители</strong></td><td>Краудсорсеры (авторы, редакторы, валидаторы)</td></tr>
+  <tr><td><strong>Роль</strong></td><td>Data-driven управление цепочкой: заявка → документирование → сдача</td></tr>
+  <tr><td><strong>Вызов</strong></td><td>Баланс «Клиенты ↔ Менеджер ↔ Краудсорсеры»: скорость, качество, загрузка, метрики</td></tr>
+  <tr><td><strong>Преимущество</strong></td><td>26 лет на стыке «заказчик ↔ процесс ↔ исполнители» (PT, VMware, FundCount)</td></tr>
+</table>
+
+<!-- Блок 1: Самопрезентация -->
+<h2 id="self-presentation">Самопрезентация</h2>
+<blockquote>
+  Я — руководитель проектов с 26-летним опытом на стыке технологий и контента. Моя сила — выстраивание процессов с участием нескольких команд с разными интересами.
+</blockquote>
+
+<table>
+  <tr><th>Компания</th><th>Кросс-функциональный опыт</th></tr>
+  <tr><td><strong>Positive Technologies</strong></td><td>Управлял документированием 5 продуктов MaxPatrol. Договорился с разработкой о раннем доступе к альфа-сборкам, с DevOps — об обучении писателей, синхронизировал спринты с релизным календарём. Результат: документация одновременно с релизом вместо +2–3 недель.</td></tr>
+  <tr><td><strong>FundCount</strong></td><td>Состыковал разработчиков (гибкость), техписателей (структура) и бизнес (скорость): Scrum, BPMN, single-source publishing.</td></tr>
+  <tr><td><strong>VMware, Microsoft, Agilent</strong></td><td>Международные проекты локализации: 5–10 команд из разных стран с разными приоритетами.</td></tr>
+  <tr><td><strong>Yandex Crowd</strong></td><td>240+ команд-заказчиков — кросс-функциональный вызов нужного масштаба. Умею находить win-win.</td></tr>
+</table>
+
+<!-- Блок 2: Кейсы STAR -->
+<h2>Кросс-функциональные кейсы (STAR)</h2>
+
+<div class="case" id="case1">
+  <div class="case-title">Кейс 1: Кросс-функциональная оптимизация документирования <span class="badge badge-orange">Positive Technologies</span></div>
+  <p><strong>Situation.</strong> Документация 5 продуктов MaxPatrol опаздывала на 2–3 недели. Причина — на стыке: разработчики поздно давали доступ к сборкам, писатели не могли развернуть Linux-стенды.</p>
+  <p><strong>Task.</strong> Сократить time-to-documentation без изменения CI/CD и найма.</p>
+  <p><strong>Action.</strong></p>
+  <ul>
+    <li><strong>С разработкой:</strong> показал цифры: баг в доке → тикет в поддержку → время разработчика. Предложил win-win: ранний доступ к альфа-сборкам → писатели находят баги до релиза → меньше тикетов. Разработчики согласились.</li>
+    <li><strong>С DevOps:</strong> договорился о курсе Linux для писателей: «писатели перестанут дёргать разработчиков по пустякам» → DevOps снизили нагрузку.</li>
+    <li><strong>С командой:</strong> изменил definition of ready: задача готова только при доступе к альфа-стенду.</li>
+  </ul>
+  <p><strong>Result.</strong> Документация одновременно с релизом. Баги в доке −30%. Все три команды выиграли.</p>
+</div>
+
+<div class="case" id="case2">
+  <div class="case-title">Кейс 2: Data-driven разрешение конфликта с продактом <span class="badge badge-orange">Positive Technologies</span></div>
+  <p><strong>Situation.</strong> Продакт MaxPatrol SIEM требовал «починить» документацию по развёртыванию. Моя команда возражала — ломалась архитектура портала.</p>
+  <p><strong>Task.</strong> Найти решение на данных, а не на мнениях.</p>
+  <p><strong>Action.</strong> Настроил Яндекс Метрику, провёл 5 UX-интервью. Перевёл спор в цифры: 70% поисков — задачно-ориентированные, 60% отказов с модульной структуры. Предложил компромисс: выделить разделы для флагманских продуктов, не ломая общую архитектуру.</p>
+  <p><strong>Result.</strong> Продакт согласился и стал адвокатом команды. Время на странице −35%, отказы −25%. Data-driven стал стандартом.</p>
+</div>
+
+<div class="case" id="case3">
+  <div class="case-title">Кейс 3: Международная координация <span class="badge badge-blue">VMware</span></div>
+  <p><strong>Situation.</strong> Локализация на 12 языков Восточной Европы. Участники: продуктовая команда (США), маркетинг (12 стран), разработка (Индия), поставщики переводов. У всех разные приоритеты.</p>
+  <p><strong>Task.</strong> Одновременный релиз на 12 языках.</p>
+  <p><strong>Action.</strong> Визуализировал процесс на одной временной шкале — каждая команда увидела влияние своих задержек. Ввёл контрольные точки с общей ответственностью. Эскалировал с готовым решением, а не с проблемой.</p>
+  <p><strong>Result.</strong> 10 из 12 языков — одновременно с английским. 2 языка с задержкой < 1 недели. Процесс стал стандартом.</p>
+</div>
+
+<!-- Блок 3: Типичные вопросы -->
+<h2 id="typical-qa">Типичные вопросы</h2>
+
+<div class="qa" id="qa1">
+  <div class="qa-q">Q: Как добиться результата от команды, которая вам не подчиняется?</div>
+  <div class="qa-a">Кейс Positive Technologies — ранний доступ к альфа-сборкам. Не просил «помочь документации», а показал, как это решает их боль: меньше тикетов в поддержку, меньше отвлечений. Win-win — и они согласились.</div>
+</div>
+
+<div class="qa" id="qa2">
+  <div class="qa-q">Q: Как разрешали конфликт команд с разными KPI?</div>
+  <div class="qa-a">Кейс с продактом по структуре документации. Перевёл спор в данные (Метрика + UX-интервью). Нашёл решение, которое удовлетворило KPI обеих сторон. Продакт стал адвокатом.</div>
+</div>
+
+<div class="qa" id="qa3">
+  <div class="qa-q">Q: Пример ошибки в кросс-функциональном проекте?</div>
+  <div class="qa-a">VMware — запустил машинный перевод для 12 языков без пилота. Технология провалилась на славянских языках. Вывод: всегда пилотировать на 1 языке, early feedback. В PT внедрял Docs as Code 2 месяца на 1 продукте перед масштабированием.</div>
+</div>
+
+<div class="qa" id="qa4">
+  <div class="qa-q">Q: Как выстраиваете отношения с нерегулярными командами?</div>
+  <div class="qa-a">Proactive stakeholder management: stakeholder mapping, check-in'ы раз в 2 недели, говорю на языке их метрик, даю раньше чем прошу.</div>
+</div>
+
+<div class="qa" id="qa5">
+  <div class="qa-q">Q: Как выстроить взаимодействие с 240+ командами в Crowd?</div>
+  <div class="qa-a">
+    <ol style="margin-top:4px;">
+      <li>Сегментация: сгруппировать по паттернам запросов</li>
+      <li>Self-service для 80%: форма заказа, каталог услуг, автосогласование</li>
+      <li>Фокус на 20% сложных случаев</li>
+      <li>Прозрачный дашборд статуса — снимает 50% вопросов</li>
+      <li>Proactive синхронизация с ключевыми стейкхолдерами</li>
+    </ol>
+  </div>
+</div>
+
+<!-- Блок 4: Фреймворки -->
+<h2 id="frameworks">Фреймворки</h2>
+
+<h3>Stakeholder Mapping</h3>
+<table>
+  <tr><th>Стейкхолдер</th><th>Интерес</th><th>Влияние</th><th>Частота</th><th>Подход</th></tr>
+  <tr><td>Команды-заказчики</td><td>Высокий</td><td>Высокое</td><td>Еженедельно</td><td>Синхронизация, дашборд</td></tr>
+  <tr><td>Продуктовые команды</td><td>Средний</td><td>Высокое</td><td>Раз в 2 нед.</td><td>Язык метрик</td></tr>
+  <tr><td>Разработка Crowd</td><td>Высокий</td><td>Высокое</td><td>Ежедневно</td><td>Технический язык</td></tr>
+  <tr><td>Руководитель Crowd</td><td>Высокий</td><td>Высокое</td><td>Еженедельно</td><td>Бизнес-результаты</td></tr>
+  <tr><td>Смежные PM'ы</td><td>Средний</td><td>Среднее</td><td>Раз в 2 нед.</td><td>Обмен практиками</td></tr>
+</table>
+
+<h3>RACI для кросс-функциональных проектов</h3>
+<table>
+  <tr><th>Активность</th><th>Документирование (вы)</th><th>Разработка</th><th>Продукт</th><th>Crowd Platform</th></tr>
+  <tr><td>Приём заявки</td><td><strong>R</strong></td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td>Оценка трудоёмкости</td><td><strong>R</strong></td><td>C</td><td>I</td><td>—</td></tr>
+  <tr><td>Доступ к API/стендам</td><td>I</td><td><strong>R</strong></td><td>—</td><td>—</td></tr>
+  <tr><td>Написание документации</td><td><strong>R</strong></td><td>C</td><td>I</td><td>—</td></tr>
+  <tr><td>Техническое ревью</td><td>I</td><td><strong>R</strong></td><td>—</td><td>—</td></tr>
+  <tr><td>Публикация</td><td><strong>R</strong></td><td>—</td><td>—</td><td>C</td></tr>
+  <tr><td>Приёмка заказчиком</td><td>C</td><td>—</td><td><strong>R</strong></td><td>—</td></tr>
+</table>
+<p style="font-size:11px;color:var(--text-3);"><strong>R</strong> = Responsible · <strong>A</strong> = Accountable · <strong>C</strong> = Consulted · <strong>I</strong> = Informed</p>
+
+<!-- Блок 5: Коммуникационные стратегии -->
+<h2 id="communication">Коммуникация с разными аудиториями</h2>
+<table>
+  <tr><th>Аудитория</th><th>Язык</th><th>Формат</th><th>Мотивация</th></tr>
+  <tr><td><strong>Разработчики</strong></td><td>Технический, конкретный</td><td>Короткие встречи, PR, спецификации</td><td>«Снизит тикеты в поддержку»</td></tr>
+  <tr><td><strong>Продакты</strong></td><td>UX, метрики, продукт</td><td>Дашборды, A/B-тесты, UX-исследования</td><td>«Повысит удовлетворённость»</td></tr>
+  <tr><td><strong>Топ-менеджмент</strong></td><td>Бизнес, деньги, сроки, риски</td><td>One-pager, дашборд ключевых метрик</td><td>«Сэкономит X ₽/часов»</td></tr>
+  <tr><td><strong>240+ команд-заказчиков</strong></td><td>Их бизнес-задача</td><td>Селф-сервис, дашборд статуса</td><td>«Быстрее, видно онлайн»</td></tr>
+</table>
+
+<!-- Блок 6: Вопросы интервьюеру -->
+<h2 id="questions-to-ask">Вопросы интервьюеру</h2>
+<ul>
+  <li>С какими командами за пределами Crowd взаимодействовать чаще всего? Какие у них KPI?</li>
+  <li>Какие кросс-функциональные конфликты типичны для этой роли?</li>
+  <li>Как устроено взаимодействие PM документирования и продуктовой команды Crowd? Где граница ответственности?</li>
+  <li>Есть ли у команд-заказчиков свои KPI, конфликтующие с качеством документации?</li>
+  <li>Как измеряется удовлетворённость внутренних заказчиков?</li>
+</ul>
+
+<!-- Блок 7: Чек-лист -->
+<h2 id="checklist-section">Чек-лист</h2>
+<ul class="checklist">
+  <li><span>✓</span> Самопрезентация под кросс-функциональный контекст</li>
+  <li><span>✓</span> 3 кросс-функциональных кейса STAR</li>
+  <li><span>✓</span> Ответы на типичные вопросы</li>
+  <li><span>✓</span> Фреймворки: stakeholder mapping, RACI</li>
+  <li><span>✓</span> Коммуникационные стратегии для разных аудиторий</li>
+  <li><span>✓</span> Вопросы интервьюеру</li>
+  <li><span>□</span> Проработать: «Как выстроить взаимодействие с 240+ командами в Crowd?»</li>
+</ul>
+
+<!-- Приложение: Карта опыта -->
+<h2 id="experience-map">Карта кросс-функционального опыта</h2>
+<table>
+  <tr><th>Взаимодействие</th><th>Где</th><th>С кем</th></tr>
+  <tr><td>Документирование ↔ Разработка</td><td>Positive Technologies</td><td>5 продуктовых команд, DevOps</td></tr>
+  <tr><td>Документирование ↔ Продукт</td><td>Positive Technologies</td><td>Продакт-менеджеры MaxPatrol SIEM</td></tr>
+  <tr><td>Локализация ↔ Разработка ↔ Маркетинг</td><td>VMware</td><td>12 стран, команды в США, Индии, Европе</td></tr>
+  <tr><td>Контент ↔ Разработка ↔ Бизнес</td><td>FundCount</td><td>Разработчики, техписатели, топ-менеджмент</td></tr>
+  <tr><td>AI-продукт ↔ Предметная область</td><td>Нейроптима</td><td>Провизоры, фарм-компании, ML-инженеры</td></tr>
+  <tr><td>Международная координация</td><td>Microsoft, Agilent</td><td>Региональные офисы, внешние поставщики</td></tr>
+</table>
+
+<blockquote style="margin-top: 30px;">
+  <strong>Ключевой посыл:</strong> «Я не просто управляю процессами внутри своей функции. Я умею договариваться с командами, у которых другие KPI, другие руководители и другие приоритеты. Я делаю это через данные, win-win и понимание их контекста.»
+</blockquote>
+
+<div class="footer">
+  Подготовка к кросс-функциональному интервью · Яндекс (Yandex Crowd) · Пётр Бондарев · Июнь 2026
+</div>
+
+</main>
+</div>
+
+</body>
+</html>
