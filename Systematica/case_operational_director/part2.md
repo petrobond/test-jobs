@@ -31,5 +31,6 @@
 
 ---
 
-Прототип: `tool/index.html` (+ `tool/sample_orders.csv`, `tool/selfcheck.js`). Скриншоты — в папке
-`screenshots/`.
+Прототип: **[открыть доску заказов](https://petrobond.github.io/test-jobs/Systematica/case_operational_director/tool/)** —
+живая версия одной ссылкой. Исходники: `tool/index.html`, `tool/sample_orders.csv`, `tool/selfcheck.js`;
+скриншоты — в папке `screenshots/`.
