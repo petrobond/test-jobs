@@ -148,14 +148,54 @@ h1{
 .toast{position:fixed;right:24px;bottom:24px;background:var(--ink);color:#fff;font-size:13.5px;padding:11px 16px;border-radius:10px;opacity:0;transform:translateY(8px);transition:.18s;pointer-events:none;z-index:9}
 .toast.show{opacity:1;transform:none}
 
+/* ---------- BI: аналитика ---------- */
+.bi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);margin-top:20px}
+.bi-head{display:flex;justify-content:space-between;align-items:flex-start;gap:22px;flex-wrap:wrap}
+.bi-head h2{margin:0;font-size:23px;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+.bi-head p{margin:6px 0 0;font-size:13px;color:var(--muted);max-width:72ch}
+.tabs{display:flex;gap:4px;background:#f1f3f8;border:1px solid var(--line);border-radius:10px;padding:4px}
+.tab{font:inherit;font-size:13.5px;font-weight:600;color:var(--muted);border:1px solid transparent;background:transparent;border-radius:8px;padding:7px 14px;cursor:pointer;transition:.12s}
+.tab:hover{color:var(--accent)}
+.tab.on{background:#fff;color:var(--accent);border-color:var(--line);box-shadow:0 1px 3px rgba(17,18,20,.06)}
+.bi-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:18px 0;padding-top:16px;border-top:1px solid var(--line)}
+.bi-kpi b{display:block;font-size:25px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1.12}
+.bi-kpi span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+.bi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.panel{border:1px solid var(--line);border-radius:12px;padding:14px 16px 16px;background:#fff}
+.panel.full{grid-column:1/-1}
+.panel h3{margin:0;font-size:14.5px;font-weight:700;color:var(--ink)}
+.panel h3 small{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:3px}
+.chart{margin-top:12px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart svg + svg{margin-top:8px}
+.chart text{font-family:inherit}
+.lg-list{margin-top:12px;display:grid;gap:6px}
+.lg-row{display:grid;grid-template-columns:10px 1fr auto auto;gap:8px;align-items:baseline;font-size:12.5px}
+.lg-row i{width:10px;height:10px;border-radius:3px;align-self:center}
+.lg-row .nm{color:var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg-row .vv{color:var(--ink);font-weight:600}
+.lg-row .pp{color:var(--muted);min-width:46px;text-align:right}
+.legend2{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;font-size:12px;color:var(--muted)}
+.legend2 i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.cap{margin-top:14px;font-size:12px;font-weight:600;color:var(--ink)}
+.cap:first-child{margin-top:6px}
+.bi-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px}
+.bi-table th,.bi-table td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.bi-table th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
+.bi-table td:first-child,.bi-table th:first-child{text-align:left}
+.bi-table td.nm{color:var(--ink);font-weight:600}
+.bi-table tr.tot td{border-top:1px solid var(--line);border-bottom:0;font-weight:700;color:var(--ink);background:#fbfcfe}
+.bi-table tr.tot td.nm{color:var(--accent)}
+
 @media (max-width:1400px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .kpis{grid-template-columns:repeat(3,1fr)}
+  .kpis,.bi-kpis{grid-template-columns:repeat(3,1fr)}
   .sbar{grid-template-columns:repeat(3,1fr)}
+  .bi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:820px){
   .wrap{padding:20px 16px 40px}
-  .board,.kpis,.sbar{grid-template-columns:1fr}
+  .board,.kpis,.sbar,.bi-kpis,.bi-grid{grid-template-columns:1fr}
   h1{font-size:29px}
   .facts{gap:26px}
 }
@@ -163,9 +203,12 @@ h1{
 @page{size:A3 landscape;margin:10mm}
 @media print{
   body{background:#fff}
-  .bar,.btn,.switch{display:none!important}
+  .bar,.btn,.switch,.tabs{display:none!important}
   .board{grid-template-columns:repeat(6,minmax(0,1fr))}
   .card{break-inside:avoid}
+  .bi{box-shadow:none;break-inside:auto}
+  .bi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .panel{break-inside:avoid}
 }
 </style>
 </head>
@@ -242,6 +285,49 @@ h1{
 
   <div class="board" id="board"></div>
 
+  <section class="bi" id="bi">
+    <div class="bi-head">
+      <div>
+        <h2>Аналитика: <span class="hl">где утекает маржа и время</span></h2>
+        <p>Те же заказы, но графиками. Вкладка меняет срез, фильтры сверху действуют и здесь:
+          сузили выборку — пересчитались и цифры, и графики. Данные вымышленные, ритм работы — настоящий.</p>
+      </div>
+      <div class="tabs" id="bi-tabs"></div>
+    </div>
+    <div class="bi-kpis" id="bi-kpis"></div>
+    <div class="bi-grid">
+      <div class="panel">
+        <h3>Структура портфеля<small>сумма заказов по срезу</small></h3>
+        <div class="chart" id="ch-structure"></div>
+      </div>
+      <div class="panel">
+        <h3>Сумма и маржа<small>себестоимость + маржа по позициям</small></h3>
+        <div class="chart" id="ch-money"></div>
+        <div class="legend2">
+          <span><i style="background:#9fb3dd"></i>себестоимость</span>
+          <span><i style="background:#3f9c63"></i>маржа</span>
+          <span><i style="background:#f1f3f8"></i>заказов нет</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Проблемность<small>доля просрочки и рекламаций внутри среза</small></h3>
+        <div class="chart" id="ch-risk"></div>
+        <div class="legend2">
+          <span><i style="background:#c9483a"></i>просрочено, % заказов</span>
+          <span><i style="background:#dfa32e"></i>рекламации, % заказов</span>
+        </div>
+      </div>
+      <div class="panel full">
+        <h3>Динамика по месяцам<small>по плановой дате сдачи · сумма и количество заказов</small></h3>
+        <div class="chart" id="ch-trend"></div>
+      </div>
+      <div class="panel full">
+        <h3>Свод по срезу<small>то же, что на графиках, но цифрами</small></h3>
+        <div id="bi-table"></div>
+      </div>
+    </div>
+  </section>
+
   <div class="note">
     <b>Что считает доска.</b> Заказ «загорается» красным в двух случаях: он висит на стадии
     дольше норматива (Замер — 3 дня, Проект — 7, Договор — 5, Производство — 21, Монтаж — 7,
@@ -250,6 +336,7 @@ h1{
     <ul>
       <li>Маржа считается автоматически: <b>сумма минус себестоимость</b>, без ручного Excel.</li>
       <li>Цифры живут в браузере (localStorage) и в CSV-файле — их видит вся команда, а не один человек.</li>
+      <li>Ниже — блок аналитики: те же данные графиками, со срезами по дилерам, менеджерам и стадиям; фильтры сверху действуют и на него.</li>
       <li>Данные в примере — вымышленные, для демонстрации логики.</li>
     </ul>
   </div>
@@ -436,7 +523,7 @@ function serializeCSV(orders) {
 
 /* ---------- состояние и хранилище ---------- */
 var state = {
-  orders: [], q: '', dealer: '', manager: '', onlyHot: false, stage: null,
+  orders: [], q: '', dealer: '', manager: '', onlyHot: false, stage: null, bi: 'dealer',
   today: todayISO(), savedAt: null, source: ''
 };
 function save() {
@@ -517,8 +604,75 @@ function totals(rows) {
   t.hotPct = t.n > 0 ? t.hot / t.n * 100 : 0;
   return t;
 }
+/* ---------- аналитика: срезы и динамика ---------- */
+function groupKey(o, dim) {
+  var v = dim === 'manager' ? o.manager : (dim === 'stage' ? o.stage : o.dealer);
+  return v || '\u2014 не указан \u2014';
+}
+function groupBy(rows, dim) {
+  var map = {}, order = [], total = 0;
+  rows.forEach(function (r) {
+    var k = groupKey(r.raw, dim);
+    if (!map[k]) {
+      map[k] = { key: k, n: 0, amount: 0, cost: 0, margin: 0, hot: 0, breach: 0, plan: 0, complaints: 0 };
+      order.push(k);
+    }
+    var g = map[k];
+    g.n++;
+    g.amount += r.raw.amount;
+    g.cost += r.raw.cost;
+    g.margin += r.margin;
+    if (r.overdue) { g.hot++; }
+    if (r.stageBreach) { g.breach++; }
+    if (r.planLate) { g.plan++; }
+    if (r.raw.complaint) { g.complaints++; }
+    total += r.raw.amount;
+  });
+  return order.map(function (k) {
+    var g = map[k];
+    g.marginPct = g.amount > 0 ? g.margin / g.amount * 100 : 0;
+    g.hotPct = g.n > 0 ? g.hot / g.n * 100 : 0;
+    g.complaintPct = g.n > 0 ? g.complaints / g.n * 100 : 0;
+    g.avgCheck = g.n > 0 ? g.amount / g.n : 0;
+    g.share = total > 0 ? g.amount / total * 100 : 0;
+    return g;
+  }).sort(function (a, b) { return b.amount - a.amount || (a.key < b.key ? -1 : 1); });
+}
+function monthKey(iso) { return iso ? String(iso).slice(0, 7) : ''; }
+function trendByMonth(rows) {
+  var map = {}, order = [];
+  rows.forEach(function (r) {
+    var k = monthKey(r.raw.planDate);
+    if (!k) { return; }
+    if (!map[k]) { map[k] = { month: k, n: 0, amount: 0, cost: 0, margin: 0, hot: 0, complaints: 0 }; order.push(k); }
+    var g = map[k];
+    g.n++;
+    g.amount += r.raw.amount;
+    g.cost += r.raw.cost;
+    g.margin += r.margin;
+    if (r.overdue) { g.hot++; }
+    if (r.raw.complaint) { g.complaints++; }
+  });
+  return order.sort().map(function (k) {
+    var g = map[k];
+    g.avgCheck = g.n > 0 ? g.amount / g.n : 0;
+    g.marginPct = g.amount > 0 ? g.margin / g.amount * 100 : 0;
+    return g;
+  });
+}
+function avgCheck(rows) {
+  var t = totals(rows);
+  return t.n > 0 ? t.amount / t.n : 0;
+}
 /* ---------- формат вывода ---------- */
 function fmtPct(v) { return v.toLocaleString('ru-RU', { maximumFractionDigits: 1 }) + ' %'; }
+var MONTHS_SHORT = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+function fmtMonth(k) {
+  if (!k) { return '—'; }
+  return MONTHS_SHORT[+k.slice(5, 7) - 1] + ' ' + k.slice(2, 4);
+}
+function fmtCount(n) { return n.toLocaleString('ru-RU'); }
+function cut(s, max) { s = String(s == null ? '' : s); return s.length > max ? s.slice(0, max - 1) + '\u2026' : s; }
 function fmtDate(iso) {
   if (!iso) { return '—'; }
   var p = iso.split('-');
@@ -653,6 +807,223 @@ function renderFilters() {
   document.getElementById('f-manager').innerHTML = opts(managers, state.manager, 'Все менеджеры');
 }
 
+/* ---------- BI: графики (чистый SVG, без библиотек) ---------- */
+var PAL = ['#5b6ff0', '#3f9c63', '#e08a3c', '#c2539b', '#2f9d9a', '#7c6bd6', '#d1603d', '#9aa0ab'];
+var CC = { grid: '#eef0f5', axis: '#9aa0ab', ink: '#111214', muted: '#8b9099',
+           cost: '#9fb3dd', green: '#3f9c63', orange: '#e08a3c', red: '#c9483a', amber: '#dfa32e' };
+var BI_DIMS = [
+  { id: 'dealer', label: 'По дилерам', dim: 'dealer', col: 'Дилер' },
+  { id: 'manager', label: 'По менеджерам', dim: 'manager', col: 'Менеджер' },
+  { id: 'stage', label: 'По стадиям', dim: 'stage', col: 'Стадия' }
+];
+function sOpen(w, h) {
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="xMidYMid meet" role="img">';
+}
+function sText(x, y, s, o) {
+  o = o || {};
+  return '<text x="' + (+x).toFixed(1) + '" y="' + (+y).toFixed(1) + '"' +
+    (o.anchor ? ' text-anchor="' + o.anchor + '"' : '') + ' font-size="' + (o.size || 11) + '"' +
+    (o.fill ? ' fill="' + o.fill + '"' : '') + (o.weight ? ' font-weight="' + o.weight + '"' : '') +
+    '>' + esc(s) + '</text>';
+}
+function sEmpty(msg) { return '<div class="empty">' + esc(msg || 'нет данных — загрузите заказы') + '</div>'; }
+
+/* шкала осей: «хорошие» шаги, чтобы подписи не сталкивались и был запас сверху */
+function niceStep(raw) {
+  var cands = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10], i;
+  if (!(raw > 0)) { return 1; }
+  var pow = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)), n = raw / pow;
+  for (i = 0; i < cands.length; i++) { if (n <= cands[i] + 1e-9) { return cands[i] * pow; } }
+  return 10 * pow;
+}
+function axisTicks(max, divisions) {
+  var step = niceStep((max > 0 ? max * 1.08 : 1) / divisions);
+  return { step: step, top: step * divisions };
+}
+function trimNum(v) { return v.toLocaleString('ru-RU', { maximumFractionDigits: 1 }); }
+function fmtAxis(n) {
+  var a = Math.abs(n);
+  if (a >= 1e6) { return trimNum(n / 1e6) + ' млн'; }
+  if (a >= 1e3) { return trimNum(n / 1e3) + ' тыс.'; }
+  return trimNum(n);
+}
+
+/* кольцевая диаграмма: структура портфеля и «Итого» в центре */
+function donutSvg(items) {
+  var total = items.reduce(function (a, g) { return a + g.amount; }, 0);
+  if (!total) { return sEmpty('нет заказов в этом срезе'); }
+  var CX = 104, CY = 104, R = 64, SW = 25, SIZE = 220, circ = 2 * Math.PI * R, acc = 0, s = sOpen(SIZE, SIZE);
+  s += '<circle cx="' + CX + '" cy="' + CY + '" r="' + R + '" fill="none" stroke="#f1f3f8" stroke-width="' + SW + '"/>';
+  items.forEach(function (g, i) {
+    var frac = g.amount / total, dash = frac * circ;
+    s += '<circle cx="' + CX + '" cy="' + CY + '" r="' + R + '" fill="none" stroke="' + PAL[i % PAL.length] +
+      '" stroke-width="' + SW + '" stroke-dasharray="' + dash.toFixed(2) + ' ' + (circ - dash).toFixed(2) +
+      '" stroke-dashoffset="' + (-acc).toFixed(2) + '" transform="rotate(-90 ' + CX + ' ' + CY + ')"/>';
+    acc += dash;
+    if (frac >= 0.07) {
+      var ang = (acc - dash / 2) / circ * 2 * Math.PI - Math.PI / 2;
+      s += sText(CX + Math.cos(ang) * (R + SW / 2 + 18), CY + Math.sin(ang) * (R + SW / 2 + 18) + 3,
+        Math.round(frac * 100) + ' %', { anchor: 'middle', size: 11, fill: CC.muted, weight: 600 });
+    }
+  });
+  s += sText(CX, CY - 1, 'Итого', { anchor: 'middle', size: 11.5, fill: CC.muted, weight: 600 });
+  var totalTxt = fmtShort(total);
+  s += sText(CX, CY + 20, totalTxt, { anchor: 'middle', size: totalTxt.length > 9 ? 14 : 16.5, fill: CC.ink, weight: 800 });
+  return s + '</svg>';
+}
+function legendRows(items) {
+  return '<div class="lg-list">' + items.map(function (g, i) {
+    return '<div class="lg-row"><i style="background:' + PAL[i % PAL.length] + '"></i>' +
+      '<span class="nm">' + esc(g.key) + '</span>' +
+      '<span class="vv">' + fmtShort(g.amount) + '</span>' +
+      '<span class="pp">' + fmtPct(g.share) + '</span></div>';
+  }).join('') + '</div>';
+}
+
+/* стековые бары: себестоимость + маржа, с осью и подписями как в кейсе */
+function barsSvg(items) {
+  var W = 470, L = 138, R2 = 152, T = 30, rowH = 30, plotW = W - L - R2;
+  var H = T + Math.max(1, items.length) * rowH + 8, max = 1, s, i, ax;
+  items.forEach(function (g) { if (g.amount > max) { max = g.amount; } });
+  ax = axisTicks(max, 2);
+  s = sOpen(W, H);
+  for (i = 0; i <= 2; i++) {
+    var x = L + plotW * (ax.step * i / ax.top);
+    s += '<line x1="' + x.toFixed(1) + '" y1="' + (T - 14) + '" x2="' + x.toFixed(1) + '" y2="' + (H - 6) + '" stroke="' + CC.grid + '"/>';
+    s += sText(x, T - 19, i === 0 ? '0' : fmtAxis(ax.step * i), { anchor: i === 0 ? 'start' : (i === 2 ? 'end' : 'middle'), size: 9.5, fill: CC.axis });
+  }
+  items.forEach(function (g, idx) {
+    var y = T + idx * rowH, h = 14;
+    var wc = plotW * Math.min(1, g.cost / ax.top), wm = plotW * Math.min(1, g.margin / ax.top);
+    s += sText(L - 9, y + h - 3, cut(g.key, 22), { anchor: 'end', size: 11.5, fill: CC.ink, weight: 600 });
+    s += '<rect x="' + L + '" y="' + y + '" width="' + plotW + '" height="' + h + '" rx="3" fill="#f6f7fa"/>';
+    if (wc > 0) { s += '<rect x="' + L + '" y="' + y + '" width="' + wc.toFixed(1) + '" height="' + h + '" rx="3" fill="' + CC.cost + '"/>'; }
+    if (wm > 0) { s += '<rect x="' + (L + wc).toFixed(1) + '" y="' + y + '" width="' + wm.toFixed(1) + '" height="' + h + '" rx="3" fill="' + CC.green + '"/>'; }
+    s += sText(L + wc + wm + 8, y + h - 3, fmtShort(g.amount) + ' · ' + fmtPct(g.marginPct), { size: 10.5, fill: CC.muted, weight: 600 });
+  });
+  return s + '</svg>';
+}
+
+/* бары проблемности: доля просрочки и доля рекламаций внутри среза */
+function riskSvg(items) {
+  var W = 470, L = 142, R2 = 66, T = 30, rowH = 46, plotW = W - L - R2;
+  var H = T + Math.max(1, items.length) * rowH + 4, s = sOpen(W, H);
+  [0, 25, 50, 75, 100].forEach(function (p) {
+    var x = L + plotW * p / 100;
+    s += '<line x1="' + x.toFixed(1) + '" y1="' + (T - 14) + '" x2="' + x.toFixed(1) + '" y2="' + (H - 4) + '" stroke="' + CC.grid + '"/>';
+    s += sText(x, T - 19, p + ' %', { anchor: p === 0 ? 'start' : (p === 100 ? 'end' : 'middle'), size: 9.5, fill: CC.axis });
+  });
+  items.forEach(function (g, idx) {
+    var y = T + idx * rowH;
+    s += sText(L - 9, y + 12, cut(g.key, 22), { anchor: 'end', size: 11.5, fill: CC.ink, weight: 600 });
+    [[CC.red, g.hotPct, y], [CC.amber, g.complaintPct, y + 19]].forEach(function (b) {
+      var w = plotW * Math.min(100, b[1]) / 100;
+      s += '<rect x="' + L + '" y="' + b[2] + '" width="' + plotW + '" height="11" rx="3" fill="#f6f7fa"/>';
+      if (w > 0) { s += '<rect x="' + L + '" y="' + b[2] + '" width="' + w.toFixed(1) + '" height="11" rx="3" fill="' + b[0] + '"/>'; }
+      s += sText(L + w + 7, b[2] + 9, Math.round(b[1]) + ' %', { size: 10.5, fill: CC.muted, weight: 600 });
+    });
+  });
+  return s + '</svg>';
+}
+
+/* area-график по месяцам — как «Динамика по суммам сделок» в кейсе */
+function areaSvg(points, val, fmt, stroke, fill) {
+  var W = 900, H = 168, L = 92, R2 = 26, T = 34, B = 28;
+  var pw = W - L - R2, ph = H - T - B, n = points.length, i, max = 0, v, ax;
+  for (i = 0; i < n; i++) { v = val(points[i]); if (v > max) { max = v; } }
+  max = max || 1;
+  ax = axisTicks(max, 4);
+  var X = function (k) { return n === 1 ? L + pw / 2 : L + k * pw / (n - 1); };
+  var Y = function (v2) { return T + ph - (v2 / ax.top) * ph; };
+  var s = sOpen(W, H), line = '';
+  for (i = 0; i <= 4; i++) {
+    var y = T + ph - (ax.step * i / ax.top) * ph;
+    s += '<line x1="' + L + '" y1="' + y.toFixed(1) + '" x2="' + (L + pw) + '" y2="' + y.toFixed(1) + '" stroke="' + CC.grid + '"/>';
+    s += sText(L - 10, y + 3.5, fmt(ax.step * i), { anchor: 'end', size: 10, fill: CC.axis });
+  }
+  for (i = 0; i < n; i++) { line += (i ? ' L ' : 'M ') + X(i).toFixed(1) + ' ' + Y(val(points[i])).toFixed(1); }
+  s += '<path d="' + line + ' L ' + X(n - 1).toFixed(1) + ' ' + (T + ph) + ' L ' + X(0).toFixed(1) + ' ' +
+    (T + ph) + ' Z" fill="' + fill + '"/>';
+  s += '<path d="' + line + '" fill="none" stroke="' + stroke + '" stroke-width="2"/>';
+  var skip = Math.ceil(n / 8);
+  for (i = 0; i < n; i++) {
+    s += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(val(points[i])).toFixed(1) + '" r="3" fill="' + stroke + '"/>';
+    if (n <= 8) {
+      var lblX = X(i), lblAnchor = 'middle';
+      if (i === 0) { lblX = X(i) + 7; lblAnchor = 'start'; }
+      else if (i === n - 1) { lblX = X(i) - 7; lblAnchor = 'end'; }
+      s += sText(lblX, Y(val(points[i])) - 9, fmt(val(points[i])), { anchor: lblAnchor, size: 10, fill: stroke, weight: 600 });
+    }
+    if (i % skip === 0 || i === n - 1) {
+      s += sText(X(i), T + ph + 18, fmtMonth(points[i].month), { anchor: 'middle', size: 10.5, fill: CC.muted, weight: 600 });
+    }
+  }
+  return s + '</svg>';
+}
+
+/* сводная таблица с тепловой подсветкой — как «Таблица по всем сотрудникам» */
+function pivotHtml(items, colName, t) {
+  var head = ['<th>' + esc(colName) + '</th>', '<th>Заказов</th>', '<th>Доля</th>', '<th>Сумма</th>',
+              '<th>Себестоимость</th>', '<th>Маржа</th>', '<th>Маржа, %</th>', '<th>Просрочено</th>',
+              '<th>Доля просрочки</th>', '<th>Рекламации</th>'];
+  var body = items.map(function (g) {
+    var heat = 'background:rgba(217,45,32,' + (Math.min(100, g.hotPct) / 100 * 0.22).toFixed(3) + ')';
+    return '<tr>' +
+      '<td class="nm">' + esc(g.key) + '</td>' +
+      '<td>' + fmtCount(g.n) + '</td>' +
+      '<td>' + fmtPct(g.share) + '</td>' +
+      '<td>' + fmtMoney(g.amount) + '</td>' +
+      '<td>' + fmtMoney(g.cost) + '</td>' +
+      '<td>' + fmtMoney(g.margin) + '</td>' +
+      '<td class="' + moneyClass(g.marginPct) + '">' + fmtPct(g.marginPct) + '</td>' +
+      '<td' + (g.hot ? ' style="color:#d92d20;font-weight:600"' : '') + '>' + fmtCount(g.hot) + '</td>' +
+      '<td style="' + heat + '">' + fmtPct(g.hotPct) + '</td>' +
+      '<td' + (g.complaints ? ' style="color:#a86400;font-weight:600"' : '') + '>' + fmtCount(g.complaints) + '</td>' +
+    '</tr>';
+  }).join('');
+  var totalRow = '<tr class="tot"><td class="nm">Итого</td>' +
+    '<td>' + fmtCount(t.n) + '</td><td>100 %</td><td>' + fmtMoney(t.amount) + '</td>' +
+    '<td>' + fmtMoney(t.amount - t.margin) + '</td><td>' + fmtMoney(t.margin) + '</td>' +
+    '<td>' + fmtPct(t.marginPct) + '</td><td>' + fmtCount(t.hot) + '</td>' +
+    '<td>' + fmtPct(t.hotPct) + '</td><td>' + fmtCount(t.complaints) + '</td></tr>';
+  return '<table class="bi-table"><thead><tr>' + head.join('') + '</tr></thead>' +
+    '<tbody>' + body + totalRow + '</tbody></table>';
+}
+
+function biKpis(rows, t) {
+  return [
+    [fmtCount(t.n), 'заказов в срезе'],
+    [fmtShort(t.amount), 'сумма среза'],
+    [fmtShort(avgCheck(rows)), 'средний чек'],
+    [fmtPct(t.marginPct), 'маржа среза · ' + fmtShort(t.margin)],
+    [fmtPct(t.hotPct), 'доля просрочки · рекламаций ' + t.complaints]
+  ].map(function (it) {
+    return '<div class="bi-kpi"><b>' + esc(it[0]) + '</b><span>' + esc(it[1]) + '</span></div>';
+  }).join('');
+}
+
+function renderBi(rows) {
+  var t = totals(rows);
+  var cur = BI_DIMS.filter(function (d) { return d.id === state.bi; })[0] || BI_DIMS[0];
+  var groups = groupBy(rows, cur.dim);
+  document.getElementById('bi-tabs').innerHTML = BI_DIMS.map(function (d) {
+    return '<button type="button" class="tab' + (d.id === cur.id ? ' on' : '') + '" data-bi="' + d.id + '">' +
+      d.label + '</button>';
+  }).join('');
+  document.getElementById('bi-kpis').innerHTML = biKpis(rows, t);
+  document.getElementById('ch-structure').innerHTML = groups.length ? donutSvg(groups) + legendRows(groups) : sEmpty();
+  document.getElementById('ch-money').innerHTML = groups.length ? barsSvg(groups.slice(0, 8)) : sEmpty();
+  document.getElementById('ch-risk').innerHTML = groups.length ? riskSvg(groups.slice(0, 8)) : sEmpty();
+  var tr = trendByMonth(rows);
+  document.getElementById('ch-trend').innerHTML = tr.length
+    ? '<div class="cap">Сумма заказов по плановой дате сдачи</div>' +
+      areaSvg(tr, function (p) { return p.amount; }, fmtShort, CC.green, 'rgba(63,156,99,.16)') +
+      '<div class="cap">Количество заказов</div>' +
+      areaSvg(tr, function (p) { return p.n; }, fmtCount, CC.orange, 'rgba(224,138,60,.16)')
+    : sEmpty('в этом срезе нет заказов с плановой датой');
+  document.getElementById('bi-table').innerHTML = groups.length ? pivotHtml(groups, cur.col, t) : sEmpty();
+}
+
 function render() {
   var rows = visibleRows();
   var t = totals(rows);
@@ -660,6 +1031,7 @@ function render() {
   renderKpis(t);
   renderStageBar(rows);
   renderBoard(rows);
+  renderBi(rows);
   renderFilters();
   var stamp = 'данные на ' + fmtDate(state.today) + ' · показано ' + rows.length +
     ' из ' + state.orders.length;
@@ -716,6 +1088,12 @@ function bind() {
     state.stage = state.stage === s ? null : s;
     render();
   });
+  document.getElementById('bi-tabs').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.tab') : null;
+    if (!b) { return; }
+    state.bi = b.getAttribute('data-bi');
+    renderBi(visibleRows());
+  });
   document.getElementById('b-import').addEventListener('click', function () {
     document.getElementById('file').click();
   });
@@ -761,6 +1139,7 @@ function applyUrl() {
   if (p.get('dealer')) { state.dealer = p.get('dealer'); }
   if (p.get('manager')) { state.manager = p.get('manager'); }
   if (p.get('q')) { state.q = p.get('q'); }
+  if (p.get('bi')) { state.bi = p.get('bi'); }
 }
 function syncControls() {
   document.getElementById('q').value = state.q;
