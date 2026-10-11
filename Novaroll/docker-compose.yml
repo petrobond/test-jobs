@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    image: novaroll-crm-card:latest
+    ports:
+      - "8501:8501"
+    # ключи берём из локального .env (в git не попадает)
+    env_file:
+      - .env
+    restart: unless-stopped

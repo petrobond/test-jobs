@@ -1,0 +1,4 @@
+# requirements-dev.txt — для тестов и локальной разработки
+-r requirements.txt
+
+pytest>=8.0

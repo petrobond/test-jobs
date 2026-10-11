@@ -1,0 +1,11 @@
+# requirements.txt — рантайм прототипа "Письмо -> карточка CRM"
+#
+# HTTP-клиент LLM-провайдеров (OpenAI-совместимый transport, без LLM-SDK)
+requests==2.34.2
+
+# валидация карточки
+pydantic>=2.7
+
+# Streamlit-приложение
+streamlit>=1.40
+pandas>=2.2

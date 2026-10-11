@@ -1,0 +1,13 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.git/
+.gitignore
+.env
+.streamlit/secrets.toml
+data/eval_items.jsonl
+docs/
+tests/
+*.md

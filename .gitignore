@@ -1,3 +1,26 @@
 .DS_Store
 test-jobs/.DS_Store
 test-jobs/brainbox/.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Secrets — креды GigaChat только локально
+.env
+
+# Secrets — ключи LLM/поиска (только локально, в git не попадают)
+llm_secrets
+brave_search
+Novaroll/.env
+Novaroll/.streamlit/secrets.toml
+
+# Локальная БД
+*.db
+*.sqlite3
+
+# Node
+node_modules/
