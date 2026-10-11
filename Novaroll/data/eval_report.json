@@ -12,18 +12,18 @@
     "contact_name": 1.0,
     "contact_email": 1.0,
     "contact_phone": 1.0,
-    "product": 0.8125,
-    "urgency": 0.625,
-    "requested_deadline": 0.8125,
+    "product": 1.0,
+    "urgency": 0.75,
+    "requested_deadline": 1.0,
     "language": 1.0
   },
-  "field_recall": 0.9090909090909091,
+  "field_recall": 0.96,
   "field_recall_detail": {
-    "count": 90,
-    "total": 99,
-    "value": 0.9090909090909091,
-    "ci_low": 0.8361858613983598,
-    "ci_high": 0.9514342373547479
+    "count": 96,
+    "total": 100,
+    "value": 0.96,
+    "ci_low": 0.9016292850152788,
+    "ci_high": 0.9843366961172447
   },
   "per_field": {
     "company": {
@@ -35,13 +35,14 @@
         "ci_high": 1.0
       },
       "recall": {
-        "count": 9,
-        "total": 9,
+        "count": 11,
+        "total": 11,
         "value": 1.0,
-        "ci_low": 0.700854948272956,
+        "ci_low": 0.7411670300055737,
         "ci_high": 1.0
       },
-      "gold_present": 9
+      "gold_present": 11,
+      "labeled": 16
     },
     "contact_name": {
       "accuracy": {
@@ -52,13 +53,14 @@
         "ci_high": 1.0
       },
       "recall": {
-        "count": 14,
-        "total": 14,
+        "count": 16,
+        "total": 16,
         "value": 1.0,
-        "ci_low": 0.7846891945970195,
-        "ci_high": 0.9999999999999999
+        "ci_low": 0.8063923170025951,
+        "ci_high": 1.0
       },
-      "gold_present": 14
+      "gold_present": 16,
+      "labeled": 16
     },
     "contact_email": {
       "accuracy": {
@@ -69,13 +71,14 @@
         "ci_high": 1.0
       },
       "recall": {
-        "count": 13,
-        "total": 13,
+        "count": 15,
+        "total": 15,
         "value": 1.0,
-        "ci_low": 0.7719046248681998,
+        "ci_low": 0.7961166964035129,
         "ci_high": 1.0
       },
-      "gold_present": 13
+      "gold_present": 15,
+      "labeled": 16
     },
     "contact_phone": {
       "accuracy": {
@@ -86,64 +89,68 @@
         "ci_high": 1.0
       },
       "recall": {
-        "count": 13,
-        "total": 13,
+        "count": 10,
+        "total": 10,
         "value": 1.0,
-        "ci_low": 0.7719046248681998,
-        "ci_high": 1.0
+        "ci_low": 0.7224671969739421,
+        "ci_high": 0.9999999999999999
       },
-      "gold_present": 13
+      "gold_present": 10,
+      "labeled": 16
     },
     "product": {
       "accuracy": {
-        "count": 13,
+        "count": 16,
         "total": 16,
-        "value": 0.8125,
-        "ci_low": 0.5699111883245088,
-        "ci_high": 0.9340840098021131
+        "value": 1.0,
+        "ci_low": 0.8063923170025951,
+        "ci_high": 1.0
       },
       "recall": {
         "count": 12,
-        "total": 13,
-        "value": 0.9230769230769231,
-        "ci_low": 0.666860488286395,
-        "ci_high": 0.986289578909774
+        "total": 12,
+        "value": 1.0,
+        "ci_low": 0.7575059904469021,
+        "ci_high": 1.0
       },
-      "gold_present": 13
+      "gold_present": 12,
+      "labeled": 16
     },
     "urgency": {
       "accuracy": {
-        "count": 10,
+        "count": 12,
         "total": 16,
-        "value": 0.625,
-        "ci_low": 0.38641040376611335,
-        "ci_high": 0.8151876754845355
+        "value": 0.75,
+        "ci_low": 0.5050168327029684,
+        "ci_high": 0.8981793257983292
       },
       "recall": {
-        "count": 10,
+        "count": 12,
         "total": 16,
-        "value": 0.625,
-        "ci_low": 0.38641040376611335,
-        "ci_high": 0.8151876754845355
+        "value": 0.75,
+        "ci_low": 0.5050168327029684,
+        "ci_high": 0.8981793257983292
       },
-      "gold_present": 16
+      "gold_present": 16,
+      "labeled": 16
     },
     "requested_deadline": {
       "accuracy": {
-        "count": 13,
+        "count": 16,
         "total": 16,
-        "value": 0.8125,
-        "ci_low": 0.5699111883245088,
-        "ci_high": 0.9340840098021131
+        "value": 1.0,
+        "ci_low": 0.8063923170025951,
+        "ci_high": 1.0
       },
       "recall": {
-        "count": 3,
-        "total": 5,
-        "value": 0.6,
-        "ci_low": 0.23072427940911855,
-        "ci_high": 0.8823792268590028
+        "count": 4,
+        "total": 4,
+        "value": 1.0,
+        "ci_low": 0.5101091596030786,
+        "ci_high": 0.9999999999999999
       },
-      "gold_present": 5
+      "gold_present": 4,
+      "labeled": 16
     },
     "language": {
       "accuracy": {
@@ -160,78 +167,76 @@
         "ci_low": 0.8063923170025951,
         "ci_high": 1.0
       },
-      "gold_present": 16
+      "gold_present": 16,
+      "labeled": 16
     },
     "_overall_recall": {
-      "count": 90,
-      "total": 99,
-      "value": 0.9090909090909091,
-      "ci_low": 0.8361858613983598,
-      "ci_high": 0.9514342373547479
+      "count": 96,
+      "total": 100,
+      "value": 0.96,
+      "ci_low": 0.9016292850152788,
+      "ci_high": 0.9843366961172447
     }
   },
   "urgency": {
     "classes": {
       "low": {
-        "precision": 1.0,
-        "recall": 0.2,
-        "f1": 0.33333333333333337,
-        "support": 5
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 4
       },
       "medium": {
-        "precision": 0.5384615384615384,
+        "precision": 0.6666666666666666,
         "recall": 1.0,
-        "f1": 0.7000000000000001,
-        "support": 7
+        "f1": 0.8,
+        "support": 8
       },
       "high": {
         "precision": 1.0,
-        "recall": 0.5,
-        "f1": 0.6666666666666666,
+        "recall": 1.0,
+        "f1": 1.0,
         "support": 4
       }
     },
     "n": 16,
-    "macro_f1": 0.5666666666666668
+    "macro_f1": 0.6
   },
   "hallucination": {
-    "count": 2,
+    "count": 0,
     "total": 64,
-    "value": 0.03125,
-    "ci_low": 0.008612138268632274,
-    "ci_high": 0.10697291857715885,
-    "offenders": [
-      "product='промышленные инструменты (ключи, дрели, пилы)'",
-      "product='инновационные IT-решения / программное обеспечение'"
-    ]
+    "value": 0.0,
+    "ci_low": 0.0,
+    "ci_high": 0.05662406063551054,
+    "offenders": []
   },
   "review": {
     "review_recall": {
-      "count": 4,
-      "total": 8,
-      "value": 0.5,
-      "ci_low": 0.21521606069626764,
-      "ci_high": 0.7847839393037324
+      "count": 1,
+      "total": 4,
+      "value": 0.25,
+      "ci_low": 0.04558726029536886,
+      "ci_high": 0.6993581599030918
     },
     "false_alarm_rate": {
       "count": 0,
-      "total": 8,
+      "total": 12,
       "value": 0.0,
       "ci_low": 0.0,
-      "ci_high": 0.3244075683414076
+      "ci_high": 0.2424940095530979
     },
-    "errors_total": 8,
-    "correct_total": 8
+    "errors_total": 4,
+    "correct_total": 12
   },
   "latency": {
-    "p50": 1.7669147090000479,
-    "p95": 3.2546398750000662,
-    "mean": 1.8017077735626117,
-    "max": 3.2546398750000662
+    "p50": 1.6584204580030928,
+    "p95": 3.0815141660023073,
+    "mean": 1.6851207005627202,
+    "max": 3.0815141660023073
   },
   "cost": {
-    "per_email_usd": 0.00028859999999999997,
-    "total_usd": 0.0046175999999999995,
+    "per_email_usd": 0.00027200625,
+    "total_usd": 0.0043521,
     "price_in": 0.15,
     "price_out": 0.6
   },
@@ -241,8 +246,8 @@
       "tier": "cheap"
     },
     "generate": {
-      "provider": "deepseek",
-      "tier": "expensive"
+      "provider": "openai",
+      "tier": "cheap"
     },
     "confidence_threshold": 0.75
   },
@@ -274,27 +279,27 @@
     },
     "field_accuracy:product": {
       "target": 0.9,
-      "actual": 0.8125,
-      "pass": false
+      "actual": 1.0,
+      "pass": true
     },
     "field_accuracy:urgency": {
       "target": 0.9,
-      "actual": 0.625,
+      "actual": 0.75,
       "pass": false
     },
     "field_accuracy:requested_deadline": {
       "target": 0.9,
-      "actual": 0.8125,
-      "pass": false
+      "actual": 1.0,
+      "pass": true
     },
     "field_recall": {
       "target": 0.95,
-      "actual": 0.9090909090909091,
-      "pass": false
+      "actual": 0.96,
+      "pass": true
     },
     "review_recall": {
       "target": 0.9,
-      "actual": 0.5,
+      "actual": 0.25,
       "pass": false
     },
     "false_alarm_rate": {
@@ -304,17 +309,17 @@
     },
     "hallucination_rate": {
       "target": 0.02,
-      "actual": 0.03125,
-      "pass": false
+      "actual": 0.0,
+      "pass": true
     },
     "latency_p95": {
       "target": 8.0,
-      "actual": 3.2546398750000662,
+      "actual": 3.0815141660023073,
       "pass": true
     },
     "cost_per_email": {
       "target": 0.005,
-      "actual": 0.00028859999999999997,
+      "actual": 0.00027200625,
       "pass": true
     },
     "_all_pass": false
@@ -323,25 +328,25 @@
     {
       "id": "e001",
       "pred": {
-        "company": "ПромТехСервис",
-        "contact_name": "Игорь Смирнов",
-        "contact_email": "i.smirnov@promteh.example.com",
-        "contact_phone": "+7 555 123 45 67",
-        "product": "промышленные насосы",
+        "company": "ООО \"ТехноСнаб\"",
+        "contact_name": "Иван Петров",
+        "contact_email": "ivan.petrov@example.com",
+        "contact_phone": "+7 555 123-4567",
+        "product": "Станок Модель X200",
         "urgency": "high",
-        "requested_deadline": "2025-03-15",
+        "requested_deadline": "2023-11-15",
         "language": "ru"
       },
       "gold": {
-        "company": "ПромТехСервис",
-        "contact_name": "Игорь Смирнов",
-        "contact_email": "i.smirnov@promteh.example.com",
-        "contact_phone": "+7 555 123 45 67",
-        "product": "Промышленные насосы",
+        "company": "ООО \"ТехноСнаб\"",
+        "contact_name": "Иван Петров",
+        "contact_email": "ivan.petrov@example.com",
+        "contact_phone": "+7 555 123-4567",
+        "product": "Станок Модель X200",
         "urgency": "high",
-        "requested_deadline": "2025-03-15",
+        "requested_deadline": "2023-11-15",
         "language": "ru",
-        "request_summary": "Запрос коммерческого предложения на поставку промышленных насосов"
+        "request_summary": "Запрос на поставку оборудования \"Станок Модель X200\"."
       },
       "needs_review": false
     },
@@ -349,58 +354,58 @@
       "id": "e002",
       "pred": {
         "company": null,
-        "contact_name": "Анна Ковалёва",
-        "contact_email": "anna.kovaleva@example.com",
-        "contact_phone": "+7 555 987 65 43",
-        "product": "CRM-система",
+        "contact_name": "Анна Смирнова",
+        "contact_email": "anna.smirnova@example.com",
+        "contact_phone": "+7 555 987-6543",
+        "product": "ЭкоФильтр 3000",
         "urgency": "medium",
         "requested_deadline": null,
         "language": "ru"
       },
       "gold": {
         "company": null,
-        "contact_name": "Анна Ковалёва",
-        "contact_email": "anna.kovaleva@example.com",
-        "contact_phone": "+7 555 987 65 43",
-        "product": "CRM-система",
-        "urgency": "low",
+        "contact_name": "Анна Смирнова",
+        "contact_email": "anna.smirnova@example.com",
+        "contact_phone": "+7 555 987-6543",
+        "product": "ЭкоФильтр 3000",
+        "urgency": "medium",
         "requested_deadline": null,
         "language": "ru",
-        "request_summary": "Консультация по выбору CRM-системы"
+        "request_summary": "Запрос на приобретение \"ЭкоФильтр 3000\"."
       },
       "needs_review": false
     },
     {
       "id": "e003",
       "pred": {
-        "company": "ООО «ДокументСервис»",
-        "contact_name": "Пётр Лебедев",
-        "contact_email": null,
-        "contact_phone": "+7 555 321 00 99",
-        "product": "система электронного документооборота",
+        "company": "СтройИнвест",
+        "contact_name": "Сергей Иванов",
+        "contact_email": "sergey.ivanov@example.com",
+        "contact_phone": null,
+        "product": "Бетономешалка ProMix 500",
         "urgency": "medium",
         "requested_deadline": null,
         "language": "ru"
       },
       "gold": {
-        "company": "ООО «ДокументСервис»",
-        "contact_name": "Пётр Лебедев",
-        "contact_email": null,
-        "contact_phone": "+7 555 321 00 99",
-        "product": "Система электронного документооборота",
+        "company": "СтройИнвест",
+        "contact_name": "Сергей Иванов",
+        "contact_email": "sergey.ivanov@example.com",
+        "contact_phone": null,
+        "product": "Бетономешалка ProMix 500",
         "urgency": "medium",
-        "requested_deadline": "2025-03-12",
+        "requested_deadline": null,
         "language": "ru",
-        "request_summary": "Расчёт стоимости внедрения системы электронного документооборота"
+        "request_summary": "Запрос на поставку \"Бетономешалка ProMix 500\" в течение недели."
       },
       "needs_review": false
     },
     {
       "id": "e004",
       "pred": {
-        "company": null,
-        "contact_name": "John Smith",
-        "contact_email": "john@marketingpro.example.com",
+        "company": "GlobalTech Solutions",
+        "contact_name": "John Doe",
+        "contact_email": "john.doe@example.com",
         "contact_phone": null,
         "product": null,
         "urgency": "medium",
@@ -408,40 +413,40 @@
         "language": "en"
       },
       "gold": {
-        "company": null,
-        "contact_name": "John Smith",
-        "contact_email": "john@marketingpro.example.com",
+        "company": "GlobalTech Solutions",
+        "contact_name": "John Doe",
+        "contact_email": "john.doe@example.com",
         "contact_phone": null,
         "product": null,
         "urgency": "low",
         "requested_deadline": null,
         "language": "en",
-        "request_summary": "Партнёрское предложение от маркетингового агентства"
+        "request_summary": "Предложение о партнерстве от GlobalTech Solutions."
       },
-      "needs_review": true
+      "needs_review": false
     },
     {
       "id": "e005",
       "pred": {
-        "company": "ООО «ТехПромСнаб»",
-        "contact_name": "Андрей Соколов",
-        "contact_email": "andrey.sokolov@example.com",
-        "contact_phone": "+7 555 123 45 67",
-        "product": "промышленные насосы модели НП-200",
+        "company": "ООО \"ТехноСнаб\"",
+        "contact_name": "Иван Петров",
+        "contact_email": "ivan.petrov@example.com",
+        "contact_phone": "+7 555 123-4567",
+        "product": "промышленный генератор модели GX-2000",
         "urgency": "high",
-        "requested_deadline": "2025-04-15",
+        "requested_deadline": "2023-10-15",
         "language": "ru"
       },
       "gold": {
-        "company": "ООО «ТехПромСнаб»",
-        "contact_name": "Андрей Соколов",
-        "contact_email": "andrey.sokolov@example.com",
-        "contact_phone": "+7 555 123 45 67",
-        "product": "промышленные насосы модели НП-200",
+        "company": "ООО \"ТехноСнаб\"",
+        "contact_name": "Иван Петров",
+        "contact_email": "ivan.petrov@example.com",
+        "contact_phone": "+7 555 123-4567",
+        "product": "промышленного генератора модели GX-2000",
         "urgency": "high",
-        "requested_deadline": "2025-04-15",
+        "requested_deadline": "2023-10-15",
         "language": "ru",
-        "request_summary": "Запрос коммерческого предложения на партию насосов НП-200"
+        "request_summary": "Запрос на поставку промышленного генератора модели GX-2000."
       },
       "needs_review": false
     }

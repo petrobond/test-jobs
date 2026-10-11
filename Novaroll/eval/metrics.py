@@ -72,6 +72,18 @@ def _norm(value: object) -> str:
     return str(value).strip().lower().strip("\"'«»“”()[]")
 
 
+def is_labeled(field: str, gold: object) -> bool:
+    """
+    Есть ли метка у поля (для честного знаменателя).
+
+    Генератор иногда оставляет `urgency=null` — это отсутствие метки, а не требование
+    вернуть null. Такие случаи из метрики исключаем, иначе accuracy падает искусственно.
+    """
+    if field == "urgency":
+        return _norm(gold) != ""
+    return True
+
+
 def field_match(field: str, pred: object, gold: object) -> bool:
     """Совпадение значения поля с эталоном (с учётом специфики поля)."""
     if field == "contact_email":
@@ -95,6 +107,9 @@ def field_match(field: str, pred: object, gold: object) -> bool:
     if a in b or b in a:
         return True
     if field in ("company", "product"):
+        # сравнение с учётом словоформ: "офисная мебель" ~ "офисной мебели"
+        if contains_evidence(a, b) or contains_evidence(b, a):
+            return True
         return _token_overlap(a, b) >= 0.6
     return False
 
@@ -148,6 +163,7 @@ def per_field_report(items: list[dict]) -> dict:
     report: dict = {}
     for field in EVAL_FIELDS:
         correct = 0
+        labeled = 0
         gold_present = 0
         gold_found = 0
         for item in items:
@@ -155,6 +171,9 @@ def per_field_report(items: list[dict]) -> dict:
             gold = item.get("gold") or {}
             g = gold.get(field)
             p = pred.get(field)
+            if not is_labeled(field, g):
+                continue
+            labeled += 1
             if field_match(field, p, g):
                 correct += 1
             if g not in (None, "", []):
@@ -162,9 +181,10 @@ def per_field_report(items: list[dict]) -> dict:
                 if field_match(field, p, g):
                     gold_found += 1
         report[field] = {
-            "accuracy": rate(correct, len(items)),
+            "accuracy": rate(correct, labeled),
             "recall": rate(gold_found, gold_present),
             "gold_present": gold_present,
+            "labeled": labeled,
         }
     # полнота по ключевым полям в целом
     total_present = sum(report[f]["gold_present"] for f in EVAL_FIELDS)
@@ -174,10 +194,14 @@ def per_field_report(items: list[dict]) -> dict:
 
 
 def urgency_report(items: list[dict]) -> dict:
-    """P/R/F1 по классам срочности (macro-F1) — enum-качество."""
+    """P/R/F1 по классам срочности (macro-F1) — только по размеченным письмам."""
     labels = ("low", "medium", "high")
-    gold = [_norm((it.get("gold") or {}).get("urgency")) for it in items]
-    pred = [_norm((it.get("pred") or {}).get("urgency")) for it in items]
+    pairs = [
+        (_norm((it.get("gold") or {}).get("urgency")), _norm((it.get("pred") or {}).get("urgency")))
+        for it in items
+    ]
+    gold = [g for g, _ in pairs if g != ""]
+    pred = [p for g, p in pairs if g != ""]
     out: dict = {"classes": {}, "n": len(gold)}
     f1s = []
     for lab in labels:
@@ -208,7 +232,7 @@ def review_stats(items: list[dict]) -> dict:
         gold = item.get("gold") or {}
         flagged = bool(item.get("needs_review"))
         is_error = (not item.get("json_valid", True)) or any(
-            not field_match(f, pred.get(f), gold.get(f)) for f in EVAL_FIELDS
+            is_labeled(f, gold.get(f)) and not field_match(f, pred.get(f), gold.get(f)) for f in EVAL_FIELDS
         )
         if is_error:
             errors_total += 1
@@ -314,6 +338,7 @@ __all__ = [
     "cost_usd",
     "field_match",
     "hallucination_rate",
+    "is_labeled",
     "per_field_report",
     "percentiles",
     "rate",

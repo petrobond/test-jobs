@@ -116,10 +116,23 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Прогон eval по golden set")
     parser.add_argument("--limit", type=int, default=None, help="ограничить число писем")
     parser.add_argument("--out", default=str(EVAL_REPORT_PATH), help="куда писать отчёт")
+    parser.add_argument(
+        "--from-items",
+        default=None,
+        help="пересчитать метрики из сохранённых карточек (data/eval_items.jsonl) без вызовов API",
+    )
     args = parser.parse_args()
 
     settings = Settings.from_env(load_env())
-    items = build_items(settings, args.limit)
+    if args.from_items:
+        items = [
+            json.loads(line)
+            for line in Path(args.from_items).read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        print(f"Пересчёт метрик из {args.from_items}: писем {len(items)}")
+    else:
+        items = build_items(settings, args.limit)
     provider_model = settings.extractor().config.model
     price_in, price_out = price_for(provider_model)
     summary = summarize(items, price_in, price_out)
