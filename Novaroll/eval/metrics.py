@@ -13,6 +13,7 @@ import re
 from collections import Counter
 
 from pipeline.rules import contains_evidence
+from pipeline.rules import coverage
 from pipeline.rules import phones_equal
 from pipeline.schema import EVAL_FIELDS
 
@@ -33,6 +34,9 @@ TARGETS = {
     "field_accuracy:urgency": 0.90,
     "field_accuracy:requested_deadline": 0.90,
     "field_recall": 0.95,
+    "summary_nonempty_rate": 0.95,
+    "summary_coverage": 0.75,
+    "summary_judge_mean": 4.0,
     "flag_precision": 0.70,
     "false_alarm_rate_max": 0.30,
     "hallucination_rate_max": 0.02,
@@ -217,6 +221,38 @@ def urgency_report(items: list[dict]) -> dict:
     return out
 
 
+def summary_stats(items: list[dict]) -> dict:
+    """
+    Качество поля `request_summary` (свободный текст — строгое сравнение не годится).
+
+    `nonempty_rate` — доля непустых summary;
+    `coverage_mean` — прокси полноты: средняя доля значимых токенов эталона, отражённых в ответе;
+    `judge`         — оценка независимого судьи (mean 1..5, доля >= 4), если он запускался.
+    """
+    n = len(items)
+    nonempty = sum(1 for it in items if str((it.get("pred") or {}).get("request_summary") or "").strip())
+    coverages = []
+    for it in items:
+        gold = str((it.get("gold") or {}).get("request_summary") or "")
+        pred = str((it.get("pred") or {}).get("request_summary") or "")
+        if gold.strip():
+            coverages.append(coverage(gold, pred))
+    judge_scores = [float(it["judge_score"]) for it in items if isinstance(it.get("judge_score"), (int, float))]
+    out: dict = {
+        "nonempty_rate": rate(nonempty, n),
+        "coverage_mean": (sum(coverages) / len(coverages)) if coverages else 0.0,
+        "coverage_n": len(coverages),
+        "judge": None,
+    }
+    if judge_scores:
+        out["judge"] = {
+            "mean": sum(judge_scores) / len(judge_scores),
+            "share_ge4": sum(1 for s in judge_scores if s >= 4) / len(judge_scores),
+            "n": len(judge_scores),
+        }
+    return out
+
+
 def review_stats(items: list[dict]) -> dict:
     """
     Работа флага `needs_review` (набор метрик вместо «recall всех ошибок»).
@@ -306,6 +342,7 @@ def summarize(items: list[dict], price_in: float = 0.0, price_out: float = 0.0) 
         "per_field": fields,
         "urgency": urgency_report(items),
         "hallucination": hallucination_rate(items),
+        "summary": summary_stats(items),
         "review": review_stats(items),
         "latency": percentiles(latencies),
         "cost": {
@@ -332,6 +369,20 @@ def check_targets(summary: dict) -> dict:
             fname = field.split(":", 1)[1]
             add(field, summary["field_accuracy"].get(fname, 0.0), target)
     add("field_recall", summary["field_recall"], TARGETS["field_recall"])
+    summ = summary["summary"]
+    add("summary_nonempty_rate", summ["nonempty_rate"]["value"], TARGETS["summary_nonempty_rate"])
+    add("summary_coverage", summ["coverage_mean"], TARGETS["summary_coverage"])
+    checks["summary_coverage"]["informational"] = True
+    checks["summary_coverage"]["note"] = "прокси (дословное пересечение слов); не гейт — качество оценивает судья"
+    if summ["judge"]:
+        add("summary_judge_mean", summ["judge"]["mean"], TARGETS["summary_judge_mean"])
+    else:
+        checks["summary_judge_mean"] = {
+            "target": TARGETS["summary_judge_mean"],
+            "actual": 0.0,
+            "pass": True,
+            "note": "N/A: судья не запускался (флаг --judge)",
+        }
     rev = summary["review"]
     if rev["errors_total"] > 0 and rev["flagged_total"] > 0:
         add("flag_precision", rev["flag_precision"]["value"], TARGETS["flag_precision"])
@@ -352,7 +403,10 @@ def check_targets(summary: dict) -> dict:
     add("hallucination_rate", summary["hallucination"]["value"], TARGETS["hallucination_rate_max"], maximum=True)
     add("latency_p95", summary["latency"]["p95"], TARGETS["latency_p95_max"], maximum=True)
     add("cost_per_email", summary["cost"]["per_email_usd"], TARGETS["cost_per_email_max"], maximum=True)
-    checks["_all_pass"] = all(c["pass"] for c in checks.values())
+    # справочные метрики (прокси) не участвуют в приёмке
+    checks["_all_pass"] = all(
+        c["pass"] for name, c in checks.items() if name != "_all_pass" and not c.get("informational")
+    )
     return checks
 
 
@@ -369,6 +423,7 @@ __all__ = [
     "rate",
     "review_stats",
     "summarize",
+    "summary_stats",
     "urgency_report",
     "wilson_interval",
 ]

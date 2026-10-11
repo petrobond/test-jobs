@@ -52,13 +52,14 @@ _DATE_RE = re.compile(
 
 
 def normalize_text(text: str) -> str:
-    """Лёгкая нормализация: NFC, пробелы, нижний регистр — для сравнения строк."""
+    """Лёгкая нормализация: NFC, ё→е, пробелы, нижний регистр — для сравнения строк."""
     if not text:
         return ""
     s = unicodedata.normalize("NFC", text)
     s = s.replace("\u00a0", " ")
     s = re.sub(r"\s+", " ", s)
-    return s.strip().lower()
+    s = s.strip().lower().replace("ё", "е")
+    return s
 
 
 def normalize_value(value: object) -> str:
@@ -141,6 +142,31 @@ def _word_present(token: str, hay: str) -> bool:
     return False
 
 
+_SIG_TOKEN_RE = re.compile(r"[a-zа-я0-9]+")
+
+
+def significant_tokens(text: str, min_len: int = 5) -> list[str]:
+    """Значимые токены текста (длина >= min_len), без дублей — для оценки summary."""
+    out: list[str] = []
+    for tok in _SIG_TOKEN_RE.findall(normalize_text(text)):
+        if len(tok) >= min_len and tok not in out:
+            out.append(tok)
+    return out
+
+
+def coverage(gold_text: str, pred_text: str, min_len: int = 5) -> float:
+    """
+    Доля значимых токенов эталона, отражённых в предсказании (прокси полноты summary).
+
+    Сравнение с учётом словоформ (`_word_present`). 1.0 — всё покрыто, 0.0 — ничего.
+    """
+    toks = significant_tokens(gold_text, min_len)
+    if not toks:
+        return 1.0
+    hay = normalize_text(pred_text)
+    return sum(1 for t in toks if _word_present(t, hay)) / len(toks)
+
+
 URGENCY_RUBRIC = """Рубрика срочности (порядок важен — первое сработавшее правило выигрывает):
 1. явное «не срочно / не к спеху / когда угодно» -> low;
 2. срок в днях («в течение N дней»): N <= 3 -> high, 4..14 -> medium, > 14 -> low;
@@ -195,6 +221,7 @@ __all__ = [
     "URL_RE",
     "URGENCY_RUBRIC",
     "contains_evidence",
+    "coverage",
     "find_emails",
     "find_phones",
     "find_phones_raw",
@@ -202,5 +229,6 @@ __all__ = [
     "normalize_text",
     "normalize_value",
     "phones_equal",
+    "significant_tokens",
     "urgency_from_rules",
 ]

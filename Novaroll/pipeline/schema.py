@@ -43,6 +43,9 @@ EVAL_FIELDS = (
     "language",
 )
 
+#: поле «суть запроса» — свободный текст, оценивается отдельно (покрытие + LLM-судья)
+SUMMARY_FIELD = "request_summary"
+
 #: ключевые поля — их отсутствие автоматически поднимает флаг «требует проверки»
 KEY_FIELDS = ("company", "contact_name", "contact_email", "contact_phone", "request_summary")
 
@@ -157,6 +160,7 @@ __all__ = [
     "EVAL_FIELDS",
     "ExtractionResult",
     "KEY_FIELDS",
+    "SUMMARY_FIELD",
     "URGENCIES",
     "Urgency",
 ]

@@ -85,8 +85,23 @@ FIELD_LABELS = {
 }
 
 
-#: поля таблицы карточки: поля из ТЗ + служебные (кортеж + кортеж — без смешения с list)
-CARD_TABLE_FIELDS = (*EVAL_FIELDS, "confidence", "needs_review", "missing_fields")
+#: порядок полей в таблице карточки (включая «суть запроса» — поле из ТЗ)
+CARD_DISPLAY_FIELDS = (
+    "company",
+    "contact_name",
+    "contact_email",
+    "contact_phone",
+    "request_summary",
+    "product",
+    "urgency",
+    "requested_deadline",
+    "language",
+    "confidence",
+    "needs_review",
+    "missing_fields",
+)
+#: алиас для обратной совместимости/тестов
+CARD_TABLE_FIELDS = CARD_DISPLAY_FIELDS
 
 
 def build_card_rows(output: dict) -> list[dict]:
@@ -188,6 +203,17 @@ def tab_eval() -> None:
     ]
     st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
     st.caption(f"Итог: {'ВСЕ ЦЕЛИ ДОСТИГНУТЫ' if checks.get('_all_pass') else 'ЕСТЬ ПРОМАХИ'}")
+
+    sm = s.get("summary")
+    if sm:
+        st.subheader("Суть запроса (request_summary)")
+        judge = sm.get("judge")
+        judge_txt = f"{judge['mean']:.2f}/5" if judge else "не запускался (--judge)"
+        cc1, cc2 = st.columns(2)
+        cc1.metric("Покрытие сути", f"{sm['coverage_mean']:.0%}")
+        cc2.metric("Оценка судьи", judge_txt)
+        if judge:
+            st.caption(f"Оценок судьи: {judge['n']} · доля ≥ 4: {judge['share_ge4']:.0%}")
 
     st.subheader("Точность по полям")
     pf = s["per_field"]

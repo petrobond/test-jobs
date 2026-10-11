@@ -210,6 +210,22 @@
     "ci_high": 0.05662406063551054,
     "offenders": []
   },
+  "summary": {
+    "nonempty_rate": {
+      "count": 16,
+      "total": 16,
+      "value": 1.0,
+      "ci_low": 0.8063923170025951,
+      "ci_high": 1.0
+    },
+    "coverage_mean": 0.74375,
+    "coverage_n": 16,
+    "judge": {
+      "mean": 4.625,
+      "share_ge4": 0.875,
+      "n": 16
+    }
+  },
   "review": {
     "flag_precision": {
       "count": 0,
@@ -244,14 +260,14 @@
     "correct_total": 16
   },
   "latency": {
-    "p50": 1.633576834003179,
-    "p95": 2.0552151249976305,
-    "mean": 1.6120554063754753,
-    "max": 2.0552151249976305
+    "p50": 1.680365250002069,
+    "p95": 2.2424265410008957,
+    "mean": 1.6698435962491658,
+    "max": 2.2424265410008957
   },
   "cost": {
-    "per_email_usd": 0.0002907375,
-    "total_usd": 0.0046518,
+    "per_email_usd": 0.0002812125,
+    "total_usd": 0.0044994,
     "price_in": 0.15,
     "price_out": 0.6
   },
@@ -266,6 +282,7 @@
     },
     "confidence_threshold": 0.75
   },
+  "judge_meta": null,
   "checks": {
     "json_valid_rate": {
       "target": 0.98,
@@ -312,6 +329,23 @@
       "actual": 1.0,
       "pass": true
     },
+    "summary_nonempty_rate": {
+      "target": 0.95,
+      "actual": 1.0,
+      "pass": true
+    },
+    "summary_coverage": {
+      "target": 0.75,
+      "actual": 0.74375,
+      "pass": false,
+      "informational": true,
+      "note": "прокси (дословное пересечение слов); не гейт — качество оценивает судья"
+    },
+    "summary_judge_mean": {
+      "target": 4.0,
+      "actual": 4.625,
+      "pass": true
+    },
     "flag_precision": {
       "target": 0.7,
       "actual": 0.0,
@@ -330,12 +364,12 @@
     },
     "latency_p95": {
       "target": 8.0,
-      "actual": 2.0552151249976305,
+      "actual": 2.2424265410008957,
       "pass": true
     },
     "cost_per_email": {
       "target": 0.005,
-      "actual": 0.0002907375,
+      "actual": 0.0002812125,
       "pass": true
     },
     "_all_pass": true
@@ -348,10 +382,11 @@
         "contact_name": "Иван Петров",
         "contact_email": "ivan.petrov@example.com",
         "contact_phone": "+7 555 123-4567",
-        "product": "\"Станок Модель X200\"",
+        "product": "Станок Модель X200",
         "urgency": "high",
         "requested_deadline": "2023-11-15",
-        "language": "ru"
+        "language": "ru",
+        "request_summary": "Компания ООО \"ТехноСнаб\" заинтересована в приобретении станка Модель X200 и просит связаться для обсуждения поставки. Оборудование необходимо получить как можно скорее, желательно до 15 ноября 2023 года."
       },
       "gold": {
         "company": "ООО \"ТехноСнаб\"",
@@ -376,7 +411,8 @@
         "product": "ЭкоФильтр 3000",
         "urgency": "low",
         "requested_deadline": null,
-        "language": "ru"
+        "language": "ru",
+        "request_summary": "Анна Смирнова интересуется возможностью приобретения продукта \"ЭкоФильтр 3000\" и просит связаться с ней."
       },
       "gold": {
         "company": null,
@@ -401,7 +437,8 @@
         "product": "Бетономешалка ProMix 500",
         "urgency": "medium",
         "requested_deadline": null,
-        "language": "ru"
+        "language": "ru",
+        "request_summary": "Компания \"СтройИнвест\" заинтересована в продукте \"Бетономешалка ProMix 500\" и хочет получить оборудование в течение недели."
       },
       "gold": {
         "company": "СтройИнвест",
@@ -426,7 +463,8 @@
         "product": null,
         "urgency": "low",
         "requested_deadline": null,
-        "language": "en"
+        "language": "en",
+        "request_summary": "Отправитель хочет обсудить потенциальное партнёрство с вашей компанией и предлагает созвон на следующей неделе."
       },
       "gold": {
         "company": "GlobalTech Solutions",
@@ -451,7 +489,8 @@
         "product": "промышленный генератор модели GX-2000",
         "urgency": "high",
         "requested_deadline": "2023-10-15",
-        "language": "ru"
+        "language": "ru",
+        "request_summary": "Компания ООО \"ТехноСнаб\" заинтересована в приобретении промышленного генератора модели GX-2000. Просит связаться и поставить оборудование как можно скорее, желательно до 15 октября 2023 года."
       },
       "gold": {
         "company": "ООО \"ТехноСнаб\"",

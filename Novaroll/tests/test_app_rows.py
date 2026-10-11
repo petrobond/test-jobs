@@ -30,3 +30,10 @@ def test_build_card_rows_empty_missing_fields():
     labels = {r["Поле"]: r["Значение"] for r in rows}
     assert labels["Не найдено"] == "—"
     assert labels["Проверить вручную"] == "нет"
+
+
+def test_build_card_rows_includes_request_summary():
+    """«Суть запроса» (поле из ТЗ) обязана быть в таблице карточки."""
+    rows = build_card_rows({"request_summary": "Запрос КП на поставку ноутбуков.", "missing_fields": []})
+    labels = {r["Поле"]: r["Значение"] for r in rows}
+    assert labels["Суть запроса"] == "Запрос КП на поставку ноутбуков."
