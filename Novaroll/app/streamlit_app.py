@@ -85,6 +85,25 @@ FIELD_LABELS = {
 }
 
 
+#: поля таблицы карточки: поля из ТЗ + служебные (кортеж + кортеж — без смешения с list)
+CARD_TABLE_FIELDS = (*EVAL_FIELDS, "confidence", "needs_review", "missing_fields")
+
+
+def build_card_rows(output: dict) -> list[dict]:
+    """Строки таблицы карточки (чистая функция — тестируется без Streamlit)."""
+    rows = []
+    for field in CARD_TABLE_FIELDS:
+        value = output.get(field)
+        if field == "missing_fields":
+            value = ", ".join(value) if value else "—"
+        elif field == "needs_review":
+            value = "да" if value else "нет"
+        elif value in (None, ""):
+            value = "—"
+        rows.append({"Поле": FIELD_LABELS.get(field, field), "Значение": value})
+    return rows
+
+
 def render_card(output: dict) -> None:
     """Рисует карточку CRM и служебные сигналы."""
     conf = float(output.get("confidence", 0.0))
@@ -94,15 +113,7 @@ def render_card(output: dict) -> None:
         st.success("✅ Карточка заполнена уверенно — можно заносить в CRM.")
     st.progress(min(max(conf, 0.0), 1.0), text=f"Уверенность модели: {conf:.0%}")
 
-    rows = []
-    for field in EVAL_FIELDS + ["confidence", "needs_review", "missing_fields"]:
-        value = output.get(field)
-        if field == "missing_fields":
-            value = ", ".join(value) if value else "—"
-        elif field == "needs_review":
-            value = "да" if value else "нет"
-        rows.append({"Поле": FIELD_LABELS.get(field, field), "Значение": value if value not in (None, "") else "—"})
-    st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+    st.dataframe(pd.DataFrame(build_card_rows(output)), hide_index=True, use_container_width=True)
 
     evidence = output.get("evidence") or {}
     if evidence:
@@ -244,6 +255,7 @@ def main() -> None:
         tab_about(provider, settings)
 
 
-main()
+if __name__ == "__main__":
+    main()
 
 
