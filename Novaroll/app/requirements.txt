@@ -1,0 +1,7 @@
+# Зависимости для Streamlit Community Cloud.
+# CC ищет requirements.txt в папке entrypoint-файла (Novaroll/app/) и только потом в корне репозитория,
+# поэтому дублируем здесь рантайм-зависимости из ../requirements.txt.
+requests==2.34.2
+pydantic>=2.7
+streamlit>=1.40
+pandas>=2.2
