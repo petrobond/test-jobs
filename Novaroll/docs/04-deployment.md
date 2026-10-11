@@ -30,10 +30,25 @@ docker run --rm -p 8501:8501 --env-file .env novaroll-crm-card
 
 1. Зайти на https://share.streamlit.io под **владельцем репозитория** (аккаунт `petrobond`),
    чтобы авто-пере-деплой на `git push` работал.
-2. «New app» → репозиторий `petrobond/test-jobs`, ветка `main`, **Main file path:** `Novaroll/app/streamlit_app.py`.
-3. В `Advanced settings → Secrets` вставить содержимое `.streamlit/secrets.toml.example`
-   с реальным `DEEPSEEK_API_KEY` (приложение само переносит `st.secrets` в окружение).
-4. Deploy. После этого приложение доступно по ссылке `https://<app>.streamlit.app`.
+2. «Create app» → «Deploy a public app from GitHub» → репозиторий `petrobond/test-jobs`,
+   ветка `main`, **Main file path:** `Novaroll/app/streamlit_app.py`.
+3. В `Advanced settings → Secrets` вставить содержимое `Novaroll/.streamlit/secrets.toml.example`
+   (TOML) с реальными ключами, например:
+   ```toml
+   DEEPSEEK_API_KEY = "sk-..."
+   DEEPSEEK_MODEL_LIGHT = "deepseek-flash"
+   DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+   EXTRACT_PROVIDER = "deepseek"
+   EXTRACT_TIER = "cheap"
+   CONFIDENCE_THRESHOLD = "0.75"
+   ```
+   Приложение само переносит `st.secrets` в окружение (`_bridge_streamlit_secrets`).
+4. Deploy → приложение доступно по `https://<app>.streamlit.app`.
+
+**Важно про зависимости.** Streamlit Cloud ищет `requirements.txt` сначала **в папке entrypoint-файла**,
+и только потом — в корне репозитория. Поэтому зависимости продублированы в
+`Novaroll/app/requirements.txt` (рядом с `streamlit_app.py`); без этого CC поставит только Streamlit
+и приложение упадёт на `import pydantic`. Локально же используется `Novaroll/requirements.txt`.
 
 > Почему именно так: Docker нужен для воспроизводимого локального запуска, а Streamlit Cloud —
 > нативная площадка для Streamlit-приложения (логин по GitHub, секреты в UI, авто-деплой).
