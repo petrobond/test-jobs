@@ -27,7 +27,10 @@ def test_urgency_rules():
     assert urgency_from_rules("Это срочно, сделайте сегодня") == "high"
     assert urgency_from_rules("нужно в течение 2 дней") == "high"
     assert urgency_from_rules("не срочно, как будет время") == "low"
-    assert urgency_from_rules("обычное письмо без сроков") is None
+    assert urgency_from_rules("нужно в течение недели") == "medium"
+    assert urgency_from_rules("срок до 15 октября 2023 года") == "medium"
+    # дефолт рубрики: сигналов нет -> low
+    assert urgency_from_rules("обычное письмо без сроков") == "low"
 
 
 def test_contains_evidence_handles_russian_forms():

@@ -33,7 +33,16 @@ LOW_MARKERS = ("не срочно", "некогда", "в течение мес�
 
 #: относительные сроки -> оценочная срочность
 _DEADLINE_DAYS_RE = re.compile(r"\b([1-9]\d?)\s*(?:дн|день|дня|дней)", re.IGNORECASE)
-_WEEK_RE = re.compile(r"\b(?:до|через|в течение)\s+(?:недели|неделю|неделя)", re.IGNORECASE)
+#: «в течение/до конца (следующей) недели», «на этой неделе»
+_WEEK_RE = re.compile(
+    r"(?:в течение|до конца|до|через|на)\s+(?:конца\s+)?(?:следующей\s+|этой\s+|текущей\s+)?недел",
+    re.IGNORECASE,
+)
+#: «в течение/до конца (следующего) месяца»
+_MONTH_RE = re.compile(
+    r"(?:в течение|до конца|через)\s+(?:следующего\s+|этого\s+|конца\s+)?месяц",
+    re.IGNORECASE,
+)
 #: явная дата: "15 октября 2023", "20.10.2023", "20.10.23"
 _DATE_RE = re.compile(
     r"\d{1,2}\s*(?:январ|феврал|март|апрел|ма[йя]|июн|июл|август|сентябр|октябр|ноябр|декабр)"
@@ -132,34 +141,43 @@ def _word_present(token: str, hay: str) -> bool:
     return False
 
 
-def urgency_from_rules(text: str) -> str | None:
-    """
-    Оценка срочности по словам/срокам. None — правил не хватило, решает LLM.
+URGENCY_RUBRIC = """Рубрика срочности (порядок важен — первое сработавшее правило выигрывает):
+1. явное «не срочно / не к спеху / когда угодно» -> low;
+2. срок в днях («в течение N дней»): N <= 3 -> high, 4..14 -> medium, > 14 -> low;
+3. явные слова срочности («срочно / срочный / asap / urgent / немедленно / как можно скорее») -> high;
+4. срок в неделях («на/до этой недели», «в течение недели») -> medium;
+5. срок в месяцах («в течение/до конца месяца») -> low;
+6. явная календарная дата-дедлайн -> medium (без привязки к «сегодня»);
+7. сигналов срочности нет -> low (дефолт)."""
 
-    Порядок важен и подчинён бизнес-логике:
-      1. явное «не срочно» -> low;
-      2. срок <= 3 дней -> high;
-      3. срок «в течение недели» -> medium (важнее слова «срочно» в теме);
-      4. слова «срочно/asap/сегодня» -> high;
-      5. срок <= 7 дней -> medium;
-      6. есть явная дата-дедлайн -> high;
-      7. сигналов нет -> None (решает модель; обычно medium).
+
+def urgency_from_rules(text: str) -> str:
+    """
+    Регламентная оценка срочности по рубрике ``URGENCY_RUBRIC``.
+
+    Всегда возвращает значение (дефолт — ``low``): срочность в CRM задаётся правилом,
+    а не «мнением модели». См. ``llm/prompts.py`` — тот же порядок описан в промпте.
     """
     hay = normalize_text(text)
     if any(m in hay for m in LOW_MARKERS):
         return "low"
     days = [int(x) for x in _DEADLINE_DAYS_RE.findall(hay)]
-    if days and min(days) <= 3:
+    if days:
+        d = min(days)
+        if d <= 3:
+            return "high"
+        if d <= 14:
+            return "medium"
+        return "low"
+    if any(m in hay for m in HIGH_MARKERS):
         return "high"
     if _WEEK_RE.search(hay):
         return "medium"
-    if any(m in hay for m in HIGH_MARKERS):
-        return "high"
-    if days and min(days) <= 7:
-        return "medium"
+    if _MONTH_RE.search(hay):
+        return "low"
     if _DATE_RE.search(hay):
-        return "high"
-    return None
+        return "medium"
+    return "low"
 
 
 def guess_language(text: str) -> str:
@@ -175,6 +193,7 @@ __all__ = [
     "EMAIL_RE",
     "PHONE_RE",
     "URL_RE",
+    "URGENCY_RUBRIC",
     "contains_evidence",
     "find_emails",
     "find_phones",

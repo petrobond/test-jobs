@@ -16,6 +16,7 @@ import json
 
 from pipeline.schema import CARD_SCHEMA_HINT
 from pipeline.schema import URGENCIES
+from pipeline.rules import URGENCY_RUBRIC
 
 
 def _schema_lines() -> str:
@@ -32,10 +33,8 @@ EXTRACTION_SYSTEM = f"""Ты — ассистент отдела продаж. �
 1. Не выдумывай данные. Если в письме нет значения — верни null и впиши имя поля в "missing_fields".
 2. Для КАЖДОГО заполненного поля (кроме confidence/missing_fields/evidence) приведи короткую
    дословную цитату из письма в объекте "evidence" (ключ — имя поля).
-3. Срочность "urgency" — только одно из: {", ".join(URGENCIES)}.
-   high  — есть слова "срочно/asap/сегодня" или срок <= 3 дней;
-   low   — прямо сказано "не срочно" / срок около месяца и более;
-   medium — остальное.
+3. Срочность "urgency" — только одно из: {", ".join(URGENCIES)}. Определяй строго по рубрике:
+{URGENCY_RUBRIC}
 4. Язык: верни код языка письма ("ru", "en", ...).
 5. confidence — твоя честная уверенность 0..1 в корректности всей карточки.
 6. request_summary — 1-2 предложения по сути обращения, без домыслов.

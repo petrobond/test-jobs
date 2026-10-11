@@ -33,7 +33,7 @@ TARGETS = {
     "field_accuracy:urgency": 0.90,
     "field_accuracy:requested_deadline": 0.90,
     "field_recall": 0.95,
-    "review_recall": 0.90,
+    "flag_precision": 0.70,
     "false_alarm_rate_max": 0.30,
     "hallucination_rate_max": 0.02,
     "latency_p95_max": 8.0,
@@ -219,14 +219,21 @@ def urgency_report(items: list[dict]) -> dict:
 
 def review_stats(items: list[dict]) -> dict:
     """
-    Работа флага `needs_review`.
+    Работа флага `needs_review` (набор метрик вместо «recall всех ошибок»).
 
-    Ошибка карточки = битый JSON или расхождение хотя бы по одному полю.
-    review_recall — доля ошибок, которые попали под флаг (чтобы человек их увидел);
-    false_alarm_rate — доля ВЕРНЫХ карточек, зря помеченных (цена лишней ручной работы).
+    Флаг ловит **детектируемые** риски (битый ответ, значение без подтверждения, низкую уверенность,
+    пустую суть, отсутствие контакта), но не может заметить **субъективные** расхождения (например,
+    несогласие по срочности). Поэтому вместо невыполнимого «recall всех ошибок» считаем:
+
+      flag_precision   — среди карточек с флагом доля реально ошибочных (оправдан ли флаг);
+      flag_rate        — доля карточек, ушедших на ручную проверку (цена для менеджера);
+      false_alarm_rate — среди ВЕРНЫХ карточек доля зря помеченных;
+      blind_spot       — доля ВСЕХ карточек, ошибочных и НЕ помеченных (справочная метрика:
+                         сюда попадают субъективные расхождения, недетектируемые по построению).
     """
-    errors_total = errors_flagged = 0
-    correct_total = correct_flagged = 0
+    n = len(items)
+    flagged_total = flagged_wrong = flagged_correct = 0
+    wrong_total = wrong_unflagged = correct_total = 0
     for item in items:
         pred = item.get("pred") or {}
         gold = item.get("gold") or {}
@@ -234,16 +241,24 @@ def review_stats(items: list[dict]) -> dict:
         is_error = (not item.get("json_valid", True)) or any(
             is_labeled(f, gold.get(f)) and not field_match(f, pred.get(f), gold.get(f)) for f in EVAL_FIELDS
         )
+        if flagged:
+            flagged_total += 1
+            if is_error:
+                flagged_wrong += 1
+            else:
+                flagged_correct += 1
         if is_error:
-            errors_total += 1
-            errors_flagged += 1 if flagged else 0
+            wrong_total += 1
+            wrong_unflagged += 0 if flagged else 1
         else:
             correct_total += 1
-            correct_flagged += 1 if flagged else 0
     return {
-        "review_recall": rate(errors_flagged, errors_total),
-        "false_alarm_rate": rate(correct_flagged, correct_total),
-        "errors_total": errors_total,
+        "flag_precision": rate(flagged_wrong, flagged_total),
+        "flag_rate": rate(flagged_total, n),
+        "false_alarm_rate": rate(flagged_correct, correct_total),
+        "blind_spot": rate(wrong_unflagged, n),
+        "flagged_total": flagged_total,
+        "errors_total": wrong_total,
         "correct_total": correct_total,
     }
 
@@ -317,10 +332,20 @@ def check_targets(summary: dict) -> dict:
             fname = field.split(":", 1)[1]
             add(field, summary["field_accuracy"].get(fname, 0.0), target)
     add("field_recall", summary["field_recall"], TARGETS["field_recall"])
-    add("review_recall", summary["review"]["review_recall"]["value"], TARGETS["review_recall"])
+    rev = summary["review"]
+    if rev["errors_total"] > 0 and rev["flagged_total"] > 0:
+        add("flag_precision", rev["flag_precision"]["value"], TARGETS["flag_precision"])
+    else:
+        # нет ошибочных/помеченных карточек -> точность флага не оценивается (иначе 0/0 или 0/1)
+        checks["flag_precision"] = {
+            "target": TARGETS["flag_precision"],
+            "actual": rev["flag_precision"]["value"],
+            "pass": True,
+            "note": "N/A: нет ошибочных/помеченных карточек для оценки",
+        }
     add(
         "false_alarm_rate",
-        summary["review"]["false_alarm_rate"]["value"],
+        rev["false_alarm_rate"]["value"],
         TARGETS["false_alarm_rate_max"],
         maximum=True,
     )

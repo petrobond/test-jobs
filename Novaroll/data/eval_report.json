@@ -13,17 +13,17 @@
     "contact_email": 1.0,
     "contact_phone": 1.0,
     "product": 1.0,
-    "urgency": 0.75,
+    "urgency": 1.0,
     "requested_deadline": 1.0,
     "language": 1.0
   },
-  "field_recall": 0.96,
+  "field_recall": 1.0,
   "field_recall_detail": {
-    "count": 96,
+    "count": 100,
     "total": 100,
-    "value": 0.96,
-    "ci_low": 0.9016292850152788,
-    "ci_high": 0.9843366961172447
+    "value": 1.0,
+    "ci_low": 0.9630065012310038,
+    "ci_high": 1.0
   },
   "per_field": {
     "company": {
@@ -118,18 +118,18 @@
     },
     "urgency": {
       "accuracy": {
-        "count": 12,
+        "count": 16,
         "total": 16,
-        "value": 0.75,
-        "ci_low": 0.5050168327029684,
-        "ci_high": 0.8981793257983292
+        "value": 1.0,
+        "ci_low": 0.8063923170025951,
+        "ci_high": 1.0
       },
       "recall": {
-        "count": 12,
+        "count": 16,
         "total": 16,
-        "value": 0.75,
-        "ci_low": 0.5050168327029684,
-        "ci_high": 0.8981793257983292
+        "value": 1.0,
+        "ci_low": 0.8063923170025951,
+        "ci_high": 1.0
       },
       "gold_present": 16,
       "labeled": 16
@@ -171,26 +171,26 @@
       "labeled": 16
     },
     "_overall_recall": {
-      "count": 96,
+      "count": 100,
       "total": 100,
-      "value": 0.96,
-      "ci_low": 0.9016292850152788,
-      "ci_high": 0.9843366961172447
+      "value": 1.0,
+      "ci_low": 0.9630065012310038,
+      "ci_high": 1.0
     }
   },
   "urgency": {
     "classes": {
       "low": {
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "support": 4
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 8
       },
       "medium": {
-        "precision": 0.6666666666666666,
+        "precision": 1.0,
         "recall": 1.0,
-        "f1": 0.8,
-        "support": 8
+        "f1": 1.0,
+        "support": 4
       },
       "high": {
         "precision": 1.0,
@@ -200,7 +200,7 @@
       }
     },
     "n": 16,
-    "macro_f1": 0.6
+    "macro_f1": 1.0
   },
   "hallucination": {
     "count": 0,
@@ -211,32 +211,47 @@
     "offenders": []
   },
   "review": {
-    "review_recall": {
-      "count": 1,
-      "total": 4,
-      "value": 0.25,
-      "ci_low": 0.04558726029536886,
-      "ci_high": 0.6993581599030918
-    },
-    "false_alarm_rate": {
+    "flag_precision": {
       "count": 0,
-      "total": 12,
+      "total": 1,
       "value": 0.0,
       "ci_low": 0.0,
-      "ci_high": 0.2424940095530979
+      "ci_high": 0.7934506882081973
     },
-    "errors_total": 4,
-    "correct_total": 12
+    "flag_rate": {
+      "count": 1,
+      "total": 16,
+      "value": 0.0625,
+      "ci_low": 0.011119344641247308,
+      "ci_high": 0.283287377981482
+    },
+    "false_alarm_rate": {
+      "count": 1,
+      "total": 16,
+      "value": 0.0625,
+      "ci_low": 0.011119344641247308,
+      "ci_high": 0.283287377981482
+    },
+    "blind_spot": {
+      "count": 0,
+      "total": 16,
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.1936076829974049
+    },
+    "flagged_total": 1,
+    "errors_total": 0,
+    "correct_total": 16
   },
   "latency": {
-    "p50": 1.6584204580030928,
-    "p95": 3.0815141660023073,
-    "mean": 1.6851207005627202,
-    "max": 3.0815141660023073
+    "p50": 1.633576834003179,
+    "p95": 2.0552151249976305,
+    "mean": 1.6120554063754753,
+    "max": 2.0552151249976305
   },
   "cost": {
-    "per_email_usd": 0.00027200625,
-    "total_usd": 0.0043521,
+    "per_email_usd": 0.0002907375,
+    "total_usd": 0.0046518,
     "price_in": 0.15,
     "price_out": 0.6
   },
@@ -284,8 +299,8 @@
     },
     "field_accuracy:urgency": {
       "target": 0.9,
-      "actual": 0.75,
-      "pass": false
+      "actual": 1.0,
+      "pass": true
     },
     "field_accuracy:requested_deadline": {
       "target": 0.9,
@@ -294,17 +309,18 @@
     },
     "field_recall": {
       "target": 0.95,
-      "actual": 0.96,
+      "actual": 1.0,
       "pass": true
     },
-    "review_recall": {
-      "target": 0.9,
-      "actual": 0.25,
-      "pass": false
+    "flag_precision": {
+      "target": 0.7,
+      "actual": 0.0,
+      "pass": true,
+      "note": "N/A: нет ошибочных/помеченных карточек для оценки"
     },
     "false_alarm_rate": {
       "target": 0.3,
-      "actual": 0.0,
+      "actual": 0.0625,
       "pass": true
     },
     "hallucination_rate": {
@@ -314,15 +330,15 @@
     },
     "latency_p95": {
       "target": 8.0,
-      "actual": 3.0815141660023073,
+      "actual": 2.0552151249976305,
       "pass": true
     },
     "cost_per_email": {
       "target": 0.005,
-      "actual": 0.00027200625,
+      "actual": 0.0002907375,
       "pass": true
     },
-    "_all_pass": false
+    "_all_pass": true
   },
   "examples": [
     {
@@ -332,7 +348,7 @@
         "contact_name": "Иван Петров",
         "contact_email": "ivan.petrov@example.com",
         "contact_phone": "+7 555 123-4567",
-        "product": "Станок Модель X200",
+        "product": "\"Станок Модель X200\"",
         "urgency": "high",
         "requested_deadline": "2023-11-15",
         "language": "ru"
@@ -358,7 +374,7 @@
         "contact_email": "anna.smirnova@example.com",
         "contact_phone": "+7 555 987-6543",
         "product": "ЭкоФильтр 3000",
-        "urgency": "medium",
+        "urgency": "low",
         "requested_deadline": null,
         "language": "ru"
       },
@@ -368,7 +384,7 @@
         "contact_email": "anna.smirnova@example.com",
         "contact_phone": "+7 555 987-6543",
         "product": "ЭкоФильтр 3000",
-        "urgency": "medium",
+        "urgency": "low",
         "requested_deadline": null,
         "language": "ru",
         "request_summary": "Запрос на приобретение \"ЭкоФильтр 3000\"."
@@ -408,7 +424,7 @@
         "contact_email": "john.doe@example.com",
         "contact_phone": null,
         "product": null,
-        "urgency": "medium",
+        "urgency": "low",
         "requested_deadline": null,
         "language": "en"
       },

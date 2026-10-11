@@ -5,6 +5,7 @@ from eval.metrics import field_match
 from eval.metrics import hallucination_rate
 from eval.metrics import percentiles
 from eval.metrics import rate
+from eval.metrics import review_stats
 from eval.metrics import summarize
 from eval.metrics import urgency_report
 
@@ -45,6 +46,20 @@ def test_urgency_macro_f1_perfect():
     ]
     report = urgency_report(items)
     assert report["macro_f1"] == 1.0
+
+
+def test_review_stats_option_b():
+    # верная не помечена; верная помечена (ложная тревога); ошибочная помечена
+    items = [
+        {"pred": {"company": "A"}, "gold": {"company": "A"}, "needs_review": False, "json_valid": True},
+        {"pred": {"company": "B"}, "gold": {"company": "B"}, "needs_review": True, "json_valid": True},
+        {"pred": {"company": "C"}, "gold": {"company": "D"}, "needs_review": True, "json_valid": True},
+    ]
+    s = review_stats(items)
+    assert s["flagged_total"] == 2
+    assert s["flag_precision"]["value"] == 0.5  # из 2 помеченных 1 реально ошибочная
+    assert s["false_alarm_rate"]["value"] == 0.5  # из 2 верных 1 помечена зря
+    assert s["blind_spot"]["value"] == 0.0  # ошибочная помечена, слепой зоны нет
 
 
 def test_summarize_smoke():

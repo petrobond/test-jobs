@@ -96,9 +96,13 @@ def print_report(summary: dict, checks: dict) -> None:
         f"({summary['hallucination']['count']}/{summary['hallucination']['total']})"
     )
     rev = summary["review"]
+    fp = rev["flag_precision"]["value"]
+    fp_txt = f"{fp:.0%}" if (rev["flagged_total"] > 0 and rev["errors_total"] > 0) else "N/A"
     print(
-        f"review: recall ошибок {rev['review_recall']['value']:.0%}, "
-        f"ложные тревоги {rev['false_alarm_rate']['value']:.0%}"
+        f"review: помечено {rev['flag_rate']['value']:.0%} карточек, "
+        f"точность флага {fp_txt}, "
+        f"ложные тревоги {rev['false_alarm_rate']['value']:.0%}, "
+        f"слепая зона {rev['blind_spot']['value']:.0%}"
     )
     lat = summary["latency"]
     print(f"латентность: p50 {lat['p50']:.1f}s | p95 {lat['p95']:.1f}s")
@@ -108,7 +112,8 @@ def print_report(summary: dict, checks: dict) -> None:
         if name == "_all_pass":
             continue
         mark = "OK " if chk["pass"] else "!! "
-        print(f"  {mark}{name:<32} факт={chk['actual']:.4f} цель={chk['target']}")
+        note = f"  ({chk['note']})" if chk.get("note") else ""
+        print(f"  {mark}{name:<32} факт={chk['actual']:.4f} цель={chk['target']}{note}")
     print(f"\nИТОГ: {'ВСЕ ЦЕЛИ ДОСТИГНУТЫ' if checks['_all_pass'] else 'ЕСТЬ ПРОМАХИ'}")
 
 
