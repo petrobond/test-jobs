@@ -9,6 +9,9 @@
     * `deepseek-flash` — reasoning-модель: при малом `max_tokens` `content` приходит пустым
       (всё уходит в `reasoning_content`) -> token-бюджет + повтор с удвоенным бюджетом;
       thinking можно гасить явным `{"thinking": {"type": "disabled"}}` (см. `env.thinking_disabled`);
+    * OpenAI-модели: `gpt-6-sol` не принимает `temperature` (только default=1) и требует
+      `max_completion_tokens` вместо `max_tokens`; в JSON-режиме OpenAI требует слово «json»
+      в сообщениях — наши промпты его содержат, а провайдер страхует откатом параметров;
     * retry только на 429 (`Retry-After`) и 5xx, с лимитом попыток;
     * в лог идёт только хэш сырого ответа и sanitized-ошибка (без PII).
 """
@@ -132,6 +135,7 @@ class ChatProvider:
         reasoning: str = "",
         thinking_off: bool = False,
         max_tokens: int | None = None,
+        temperature: float | None = 0.0,
     ) -> None:
         self.config = config
         self.timeout = timeout
@@ -140,6 +144,8 @@ class ChatProvider:
         self.reasoning = reasoning
         self.thinking_off = thinking_off
         self.max_tokens = max_tokens or MAX_TOKENS.get(config.tier, MAX_TOKENS[TIER_CHEAP])
+        #: `None` — не передавать temperature (например, gpt-6-sol принимает только default=1)
+        self.temperature = temperature
 
     @property
     def label(self) -> str:
@@ -163,9 +169,9 @@ class ChatProvider:
             body["reasoning_effort"] = self.reasoning
         if self.thinking_off:
             body["thinking"] = {"type": "disabled"}
-        else:
-            # temperature поддерживается только в non-thinking режиме
-            body["temperature"] = 0
+        elif self.temperature is not None:
+            # temperature поддерживается не всеми моделями (gpt-6-sol принимает только default=1)
+            body["temperature"] = self.temperature
         return body
 
     def complete(self, messages: list[dict]) -> Completion:
@@ -221,8 +227,15 @@ class ChatProvider:
             # `max_tokens` не поддержан моделью -> повтор с `max_completion_tokens`
             if resp.status_code == 400 and self.max_tokens_field == "max_tokens" and "max_completion_tokens" in payload:
                 self.max_tokens_field = "max_completion_tokens"
-                body = self._body(messages)
+                body = self._body(messages, budget)
                 last_error = "retry: max_completion_tokens"
+                continue
+
+            # `temperature` не поддержана моделью (напр. gpt-6-sol) -> повтор без неё
+            if resp.status_code == 400 and self.temperature is not None and "temperature" in payload:
+                self.temperature = None
+                body = self._body(messages, budget)
+                last_error = "retry: drop temperature"
                 continue
 
             last_error = sanitize_error(f"http {resp.status_code}: {payload}")

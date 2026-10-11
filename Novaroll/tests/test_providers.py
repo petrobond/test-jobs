@@ -83,3 +83,23 @@ def test_build_provider_reads_env():
     provider = build_provider("deepseek", "expensive", env)
     assert provider.config.model == "deepseek-v4-pro"
     assert provider.thinking_off is True
+
+
+def test_drops_temperature_on_400():
+    """gpt-6-sol принимает только default temperature -> провайдер откатывает параметр."""
+    session = FakeSession(
+        [
+            FakeResponse(400, text="'temperature' does not support 0 with this model"),
+            FakeResponse(200, _ok_payload('{"a":3}')),
+        ]
+    )
+    provider = DeepSeekProvider(CFG, session=session, max_attempts=4)
+    completion = provider.complete([{"role": "user", "content": "x"}])
+    assert completion.ok
+    assert provider.temperature is None
+
+
+def test_temperature_none_not_sent():
+    provider = DeepSeekProvider(CFG, temperature=None)
+    body = provider._body([{"role": "user", "content": "x"}])
+    assert "temperature" not in body
